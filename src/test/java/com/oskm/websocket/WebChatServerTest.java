@@ -10,7 +10,7 @@ public class WebChatServerTest {
 
 	@Test
 	public void run() throws Exception {
-		int port = 8887;
+		int port = 8886;
 		WebChatServer server = new WebChatServer(port);
 		server.start();
 		System.out.printf("started... port %d", server.getPort());

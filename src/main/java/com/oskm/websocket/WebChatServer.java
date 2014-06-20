@@ -38,15 +38,17 @@ public class WebChatServer extends WebSocketServer {
 	}
 
 	@Override
-	public void onError(WebSocket webSocket, Exception arg1) {
+	public void onError(WebSocket webSocket, Exception e) {
 		// TODO Auto-generated method stub
+		LOG.debug("onError", e);
 		
 	}
 
 	@Override
 	public void onMessage(WebSocket webSocket, String message) {
 		// TODO Auto-generated method stub
-		LOG.debug("onOpen");
+		LOG.debug("onMessage : " + message);
+		this.sendToAll(message);
 		
 	}
 
