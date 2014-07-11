@@ -32,4 +32,10 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<Object> {
 		cause.printStackTrace();
 		ctx.close();
 	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext paramChannelHandlerContext, Object paramI) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
