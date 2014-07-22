@@ -12,30 +12,40 @@
  */
 package com.oskm.netty;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * Handles a server-side channel.
  */
-public class DiscardServerHandler extends SimpleChannelInboundHandler<Object> {
+public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		// TODO Auto-generated method stub
-		super.channelRead(ctx, msg);
+		ByteBuf in = (ByteBuf) msg;
+
+		try {
+			while (in.isReadable()) {
+				System.out.print((char) in.readByte());
+				System.out.flush();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			ReferenceCountUtil.release(msg);
+
+		}
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		// Close the connection when an exception is raised.
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		// TODO Auto-generated method stub
 		cause.printStackTrace();
 		ctx.close();
 	}
 
-	@Override
-	protected void channelRead0(ChannelHandlerContext paramChannelHandlerContext, Object paramI) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 }
