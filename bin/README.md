@@ -1,4 +1,0 @@
-Messaging
-=========
-
-about Messaging tech
