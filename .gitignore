@@ -1,1 +1,10 @@
-/target
+target
+build
+bin
+.idea
+.classpath
+.project
+.git
+*.class
+*.bak
+*.iml
