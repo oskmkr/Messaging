@@ -267,12 +267,31 @@
         </dependency>
         <!-- embed tomcat end -->
         <!-- rabbit mq start -->
+        <!--
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
             <version>2.8.4</version>
         </dependency>
+        -->
         <!-- rabbit mq end -->
+        <!-- spring amqp start -->
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-amqp</artifactId>
+            <version>1.3.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit</artifactId>
+            <version>1.3.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-erlang</artifactId>
+            <version>1.3.5.RELEASE</version>
+        </dependency>
+        <!-- spring amqp end -->
     </dependencies>
 	<repositories>
 		<repository>
