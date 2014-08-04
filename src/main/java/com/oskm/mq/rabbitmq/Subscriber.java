@@ -14,7 +14,7 @@ import java.io.IOException;
 public class Subscriber {
 
     private static final Logger LOG = Logger.getLogger(Subscriber.class);
-    private static final String QUEUE_NAME = "hello_rabbit_mq";
+    private static final String QUEUE_NAME = "hello_rabbit_mq2";
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ConnectionFactory factory = new ConnectionFactory();
@@ -29,7 +29,7 @@ public class Subscriber {
         QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(QUEUE_NAME, true, consumer);
 
-        while(true) {
+        while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
             String message = new String(delivery.getBody());
             LOG.debug(" [x] Received '" + message + "'");

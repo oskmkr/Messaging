@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 public class Publisher {
 
     private static final Logger LOG = Logger.getLogger(Publisher.class);
-    private static final String QUEUE_NAME = "hello_rabbit_mq";
+    private static final String QUEUE_NAME = "hello_rabbit_mq2";
 
     public static void main(String[] args) throws IOException {
         ConnectionFactory factory = new ConnectionFactory();
@@ -29,18 +29,17 @@ public class Publisher {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-            for (; ; ) {
+            while(true ) {
                 String line = in.readLine();
                 if (line == null) {
                     break;
                 }
 
-                String message = "Hello, rabbit MQ";
+                String message = "[Hello, rabbit MQ] " + line;
 
                 channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
 
                 LOG.debug(" [x] Sent '" + message + "'");
-
 
                 // If user typed the 'bye' command, wait until the server closes
                 // the connection.

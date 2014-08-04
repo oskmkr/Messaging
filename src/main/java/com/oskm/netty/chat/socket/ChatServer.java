@@ -8,6 +8,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import org.springframework.util.StringUtils;
 
 public class ChatServer {
     static final boolean SSL = System.getProperty("ssl") != null;
@@ -25,16 +26,23 @@ public class ChatServer {
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO)).childHandler(new ChatServerChannelInitializer(sslCtx));
-
+            
 
             b.bind(PORT).sync().channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+        }
+    }
+
+    public void test() {
+        if(StringUtils.isEmpty("string")) {
+
         }
     }
 }

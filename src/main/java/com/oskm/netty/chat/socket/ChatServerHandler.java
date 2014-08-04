@@ -69,5 +69,4 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 		ctx.close();
 	}
 
-	
 }
