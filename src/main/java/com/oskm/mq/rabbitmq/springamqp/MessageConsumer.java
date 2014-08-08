@@ -11,4 +11,8 @@ public class MessageConsumer {
     public void listen(String message) {
         LOG.debug(" [x] Received '" + message + "'");
     }
+
+    public void listen2(String message) {
+        LOG.debug(" [x] Received ------ '" + message + "'");
+    }
 }

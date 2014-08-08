@@ -3,31 +3,38 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:rabbit="http://www.springframework.org/schema/rabbit"
        xsi:schemaLocation="http://www.springframework.org/schema/rabbit
-http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+http://www.springframework.org/schema/rabbit/spring-rabbit-1.3.xsd
 http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- A reference to the org.springframework.amqp.rabbit.connection.ConnectionFactory -->
-    <rabbit:connection-factory id="connectionFactory" host="localhost"/>
+    <rabbit:connection-factory id="connectionFactory" addresses="localhost:5672,localhost:5673"/>
 
     <!-- Creates a org.springframework.amqp.rabbit.core.RabbitTemplate for access to the broker -->
-    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" exchange="myExchange"
-                     routing-key="hello_rabbit_mq"/>
+    <!--
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" exchange="my.topic.exchange"
+                     routing-key="lionQueue"/>
+    -->
 
     <!-- Creates a org.springframework.amqp.rabbit.core.RabbitAdmin  to manage exchanges, queues and bindings -->
     <rabbit:admin connection-factory="connectionFactory"/>
 
     <!-- Creates a queue for consumers to retrieve messages -->
-    <rabbit:queue name="hello_rabbit_mq"/>
+    <rabbit:queue name="lionQueue"/>
+    <rabbit:queue name="tigerQueue"/>
+    <rabbit:queue name="dogQueue"/>
 
-    <rabbit:topic-exchange name="myExchange">
+    <!--
+    <rabbit:topic-exchange name="my.topic.exchange">
         <rabbit:bindings>
-            <rabbit:binding queue="hello_rabbit_mq" pattern="*"></rabbit:binding>
+            <rabbit:binding queue="lionQueue" pattern="*"></rabbit:binding>
         </rabbit:bindings>
     </rabbit:topic-exchange>
+    -->
 
     <rabbit:listener-container connection-factory="connectionFactory">
-        <rabbit:listener queues="hello_rabbit_mq" ref="messageConsumer" method="listen" />
+        <rabbit:listener queues="lionQueue" ref="messageConsumer" method="listen" />
+        <rabbit:listener queues="tigerQueue,dogQueue" ref="messageConsumer" method="listen2" />
     </rabbit:listener-container>
 
     <bean id="messageConsumer" class="com.oskm.mq.rabbitmq.springamqp.MessageConsumer"/>

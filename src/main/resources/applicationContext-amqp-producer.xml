@@ -3,15 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:rabbit="http://www.springframework.org/schema/rabbit"
        xsi:schemaLocation="http://www.springframework.org/schema/rabbit
-http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+http://www.springframework.org/schema/rabbit/spring-rabbit-1.3.xsd
 http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- A reference to the org.springframework.amqp.rabbit.connection.ConnectionFactory -->
-    <rabbit:connection-factory id="connectionFactory" host="localhost"/>
+    <rabbit:connection-factory id="connectionFactory" addresses="localhost:5672,localhost:5673"/>
 
     <!-- Creates a org.springframework.amqp.rabbit.core.RabbitTemplate for access to the broker -->
-    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" />
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" exchange="my.fanout.exchange" routing-key="routing.lion.binding" message-converter="jsonMessageConvertor"/>
+
+    <bean id="jsonMessageConvertor" class="org.springframework.amqp.support.converter.JsonMessageConverter"/>
     <!--
     exchange="myExchange"
                      routing-key="hello_rabbit_mq"
@@ -20,7 +22,41 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     <!-- Creates a org.springframework.amqp.rabbit.core.RabbitAdmin  to manage exchanges, queues and bindings -->
     <rabbit:admin connection-factory="connectionFactory"  />
 
+    <rabbit:queue name="lionQueue"/>
+    <rabbit:queue name="tigerQueue"/>
+    <rabbit:queue name="dogQueue">
+        <rabbit:queue-arguments>
+            <entry key="x-ha-policy" value="all"></entry>
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <!-- Direct Exchange -->
+    <rabbit:direct-exchange name="my.direct.exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="lionQueue" key="routing.lion.binding"></rabbit:binding>
+            <rabbit:binding queue="tigerQueue" key="routing.tiger.binding"></rabbit:binding>
+            <rabbit:binding queue="dogQueue" key="routing.dog.binding"></rabbit:binding>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!-- Fan out Exchange -->
+    <rabbit:fanout-exchange name="my.fanout.exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="lionQueue"></rabbit:binding>
+            <rabbit:binding queue="tigerQueue"></rabbit:binding>
+            <rabbit:binding queue="dogQueue"></rabbit:binding>
+        </rabbit:bindings>
+    </rabbit:fanout-exchange>
+
+    <!-- Topic  Exchange -->
+    <rabbit:topic-exchange name="my.topic.exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="lionQueue" pattern="routing.lion.*"></rabbit:binding>
+            <rabbit:binding queue="tigerQueue" pattern="routing.tiger.*"></rabbit:binding>
+            <rabbit:binding queue="dogQueue" pattern="routing.tiger.*"></rabbit:binding>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+    
     <!-- Creates a queue for consumers to retrieve messages -->
-    <rabbit:queue name="myQueue" />
 
 </beans>
