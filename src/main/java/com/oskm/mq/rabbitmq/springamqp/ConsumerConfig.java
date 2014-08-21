@@ -8,21 +8,21 @@
 
 package com.oskm.mq.rabbitmq.springamqp;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.amqp.support.converter.JsonMessageConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Created by sungkyu.eo on 2014-08-04.
+ * Created by sungkyu.eo on 2014-08-20.
  */
-public class MessageConsumer {
-    private static final Logger LOG = LoggerFactory.getLogger(MessageConsumer.class);
+@Configuration
+public class ConsumerConfig {
 
-    public void listen(Whistle message) {
-        LOG.debug(" [x] Received '" + message.getMessage() + "'");
+    @Bean
+    public JsonMessageConverter jsonMessageConverter() {
+        JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
+        return jsonMessageConverter;
     }
 
-    public void listen2(Whistle message) {
-        LOG.debug(" [x] Received ------ '" + message.getMessage() + "'");
-    }
+
 }

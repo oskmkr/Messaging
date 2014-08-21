@@ -25,6 +25,7 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -82,7 +83,7 @@ public class CommonsHttpClientTemplate<Object> implements HttpClientTemplate {
 	}
 
 	/**
-	 * @param requestParameters
+	 * @param parameters
 	 * @return
 	 * @throws HttpClientException
 	 */
@@ -99,7 +100,7 @@ public class CommonsHttpClientTemplate<Object> implements HttpClientTemplate {
 	 * HttpClientException �߻� �� throw���� �ʰ� ����Ʈ��(����Ÿ���� String�� ���� ���, �ٸ� Ÿ���� ����
 	 * null)���� �����ϴ� �޼ҵ� (client �ڵ忡�� Ư���� ó������ ���� ���� �� ����Ѵ�)
 	 * 
-	 * @param requestParameters
+	 * @param parameters
 	 * @return
 	 */
 	public Object executeQuietly(HttpClientParameters parameters) {

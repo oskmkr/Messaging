@@ -39,10 +39,4 @@ public class ChatServer {
             workerGroup.shutdownGracefully();
         }
     }
-
-    public void test() {
-        if(StringUtils.isEmpty("string")) {
-
-        }
-    }
 }
