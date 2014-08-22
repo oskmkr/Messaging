@@ -17,14 +17,14 @@ import java.net.Socket;
 /**
  * Created by sungkyu.eo on 2014-08-22.
  */
-public class SocketListener extends Thread {
+public class SocketListener implements Runnable {
 
     private Socket socket;
 
-    public SocketListener() {
+    public SocketListener(Socket socket) {
+        this.socket = socket;
         try {
             connect();
-            listen();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,7 +35,6 @@ public class SocketListener extends Thread {
 
         System.out.println("connection...");
 
-        socket = new Socket("localhost", 8023);
 
         System.out.println("connection completed...");
 
@@ -65,5 +64,10 @@ public class SocketListener extends Thread {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void run() {
+        listen();
     }
 }

@@ -14,12 +14,18 @@ import java.net.Socket;
 /**
  * Created by sungkyu.eo on 2014-08-22.
  */
-public class SocketSender extends Thread {
-    public SocketSender() {
+public class SocketSender implements Runnable {
+    public SocketSender(Socket socket) {
+        this.socket = socket;
+
+    }
+
+    private Socket socket;
+
+    @Override
+    public void run() {
         System.out.println("listen completed..");
         try {
-            Socket socket = new Socket("localhost", 8023);
-
             OutputStream out = socket.getOutputStream();
 
             BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
@@ -33,9 +39,12 @@ public class SocketSender extends Thread {
                     break;
                 }
 
-                outWriter.write(line);
+                outWriter.write(line + "\r\n");
                 outWriter.flush();
             }
+
+            outWriter.close();
+            socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -17,13 +17,16 @@ import java.net.Socket;
  */
 public class SocketClient {
 
+    public static void main(String[] args) throws IOException {
 
+        Socket socket = new Socket("localhost", 8023);
 
-    public static void main(String[] args) {
+        Thread listen = new Thread(new SocketListener(socket));
+        listen.start();
 
-        Thread listen = new SocketListener();
+        Thread sender = new Thread(new SocketSender(socket));
+        sender.start();
 
-        Thread client = new SocketSender();
     }
 
 
