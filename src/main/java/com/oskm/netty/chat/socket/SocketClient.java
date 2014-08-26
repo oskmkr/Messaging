@@ -8,7 +8,7 @@
 
 package com.oskm.netty.chat.socket;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -18,12 +18,17 @@ import java.net.Socket;
 public class SocketClient {
 
 
-
     public static void main(String[] args) {
+        Socket socket = null;
+        try {
+            socket = new Socket("localhost", 8023);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        Thread listen = new SocketListener();
+        Thread listen = new SocketListener(socket);
 
-        Thread client = new SocketSender();
+        Thread client = new SocketSender(socket);
     }
 
 

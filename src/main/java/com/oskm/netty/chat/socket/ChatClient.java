@@ -12,9 +12,13 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+/**
+ * mvn exec:java -Dexec.mainClass="com.oskm.netty.chat.socket.ChatServer"
+ */
 public class ChatClient {
 	static final boolean SSL = System.getProperty("ssl") != null;
-	static final String HOST = System.getProperty("host", "127.0.0.1");
+	static final String HOST = System.getProperty("host", "localhost");
+//	static final String HOST = System.getProperty("host", "54.64.84.87");
 	static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8992" : "8023"));
 
 	public static void main(String[] args) throws Exception {

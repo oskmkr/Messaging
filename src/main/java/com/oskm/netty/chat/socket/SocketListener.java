@@ -21,24 +21,9 @@ public class SocketListener extends Thread {
 
     private Socket socket;
 
-    public SocketListener() {
-        try {
-            connect();
-            listen();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void connect() throws IOException {
-
-        System.out.println("connection...");
-
-        socket = new Socket("localhost", 8023);
-
-        System.out.println("connection completed...");
-
+    public SocketListener(Socket socket) {
+        this.socket = socket;
+        listen();
     }
 
     private void listen() {
