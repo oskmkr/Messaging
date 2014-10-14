@@ -13,5 +13,5 @@ public class Consumer {
     public static void main(String[] args) {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-amqp-consumer.xml");
     }
-
 }
+

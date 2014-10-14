@@ -18,7 +18,7 @@ import java.net.Socket;
  * Created by sungkyu.eo on 2014-08-25.
  */
 public class ServerHandler implements Runnable {
-    private Thread t;
+    //private Thread t;
 
     public ServerHandler(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -32,13 +32,17 @@ public class ServerHandler implements Runnable {
             try {
                 Socket socket = serverSocket.accept();
 
+                socketHolder.add(socket);
+
                 BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
                 bWriter.write("welcome...\r\n");
                 bWriter.flush();
 
-                t = new Thread(new ConnectionHandler(socket));
+                Thread t = new Thread(new ConnectionHandler(socket));
                 t.start();
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -46,4 +50,5 @@ public class ServerHandler implements Runnable {
     }
 
     private ServerSocket serverSocket;
+    private SocketHolder socketHolder = new SocketHolder();
 }

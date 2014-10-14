@@ -17,9 +17,11 @@ import org.slf4j.LoggerFactory;
  */
 public class MessageConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(MessageConsumer.class);
+    private static int count = 0;
 
     public void listen(Whistle message) {
-        LOG.debug(" [x] Received '" + message.getMessage() + "'");
+        LOG.debug(" [x] Received '" + message.getMessage() + "' ... " + ++count);
+
     }
 
     public void listen2(Whistle message) {
