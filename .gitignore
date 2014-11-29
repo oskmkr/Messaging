@@ -1,4 +1,5 @@
 webapp/
+webapp/WEB-INF/lib/
 target
 build
 bin

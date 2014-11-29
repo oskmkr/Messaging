@@ -17,6 +17,11 @@
         </encoder>
     </appender>
 
+    <logger name="org.springframework.amqp.rabbit.listener.BlockingQueueConsumer" additivity="false">
+        <level value="OFF"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
     <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>

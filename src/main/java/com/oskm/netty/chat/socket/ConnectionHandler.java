@@ -8,15 +8,18 @@
 
 package com.oskm.netty.chat.socket;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.Socket;
+import java.util.Iterator;
 
 /**
  * Created by sungkyu.eo on 2014-08-25.
  */
 public class ConnectionHandler implements Runnable {
+    private Logger LOG = LoggerFactory.getLogger(ConnectionHandler.class);
 
     private Socket socket;
 
@@ -29,13 +32,36 @@ public class ConnectionHandler implements Runnable {
 
         while (true) {
             BufferedReader reader = null;
+            BufferedWriter writer = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                System.err.println(reader.readLine());
+
+                String msg = reader.readLine();
+                System.err.println(msg);
+
+                Iterator<Socket> socketIterator = socketHolder.iterator();
+
+                while (socketIterator.hasNext()) {
+
+                    Socket each = socketIterator.next();
+
+                    writer = new BufferedWriter(new OutputStreamWriter(each.getOutputStream()));
+
+                    if (socket != each) {
+                        writer.write("[" + each.getRemoteSocketAddress() + "] : " + msg + "\r\n");
+                        writer.flush();
+                    } else {
+                        writer.write("[you] : " + msg + "\r\n");
+                        writer.flush();
+                    }
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
     }
+
+    private SocketHolder socketHolder = new SocketHolder();
 }
