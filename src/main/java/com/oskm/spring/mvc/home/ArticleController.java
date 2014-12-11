@@ -1,7 +1,6 @@
-package com.oskm.home;
+package com.oskm.spring.mvc.home;
 
 import org.apache.log4j.Logger;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

@@ -1,4 +1,4 @@
-package com.oskm.home;
+package com.oskm.spring.mvc.home;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;

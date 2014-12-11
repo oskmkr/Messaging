@@ -19,7 +19,7 @@ http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <!-- A reference to the org.springframework.amqp.rabbit.connection.ConnectionFactory -->
-    <rabbit:connection-factory id="connectionFactory" addresses="localhost:5673" username="smarthome" password="tmakxmgha!23" virtual-host="/"  />
+    <rabbit:connection-factory id="connectionFactory" addresses="localhost:5672" username="smarthome" password="tmakxmgha!23" virtual-host="/"  />
 
     <bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.JsonMessageConverter"/>
 

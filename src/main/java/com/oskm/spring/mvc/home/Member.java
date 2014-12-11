@@ -1,4 +1,4 @@
-package com.oskm.home;
+package com.oskm.spring.mvc.home;
 
 import java.util.Date;
 

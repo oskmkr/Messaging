@@ -2,7 +2,7 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<typeAliases>
-		<typeAlias alias="member" type="com.oskm.home.Member" />
+		<typeAlias alias="member" type="com.oskm.spring.mvc.home.Member" />
 	</typeAliases>
 	<mappers>
 		<mapper resource="com/oskm/home/Member.xml"/>
