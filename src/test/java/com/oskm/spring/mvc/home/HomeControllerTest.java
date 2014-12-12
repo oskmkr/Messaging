@@ -11,12 +11,20 @@ package com.oskm.spring.mvc.home;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.RestTemplate;
+
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @see http://helloworld.naver.com/helloworld/textyle/1341
@@ -36,5 +44,32 @@ public class HomeControllerTest {
         ).build();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/Home").param("age", "18")).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.content().string("Home"));
+    }
+
+    @Test
+    public void crawPage() {
+        /*
+        Properties props = System.getProperties();
+        props.put("http.proxyHost", "168.219.61.252");
+        props.put("http.proxyPort", "8080");
+        RestTemplate restTemplate = new RestTemplate();
+        */
+        SimpleClientHttpRequestFactory httpRequestFactory = new SimpleClientHttpRequestFactory();
+
+        httpRequestFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("168.219.61.252", 8080)));
+
+
+        RestTemplate restTemplate = new RestTemplate(httpRequestFactory);
+
+        //restTemplate.
+
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        params.put("cdebug", true);
+
+        String result = restTemplate.getForObject("http://www.naver.com/" + "?cdebug={cdebug}", String.class, params);
+
+        System.out.println(result);
     }
 }
