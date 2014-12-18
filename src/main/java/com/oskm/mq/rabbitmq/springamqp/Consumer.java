@@ -11,7 +11,14 @@ public class Consumer {
     private static final Logger LOG = Logger.getLogger(Consumer.class);
 
     public static void main(String[] args) {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-amqp-consumer.xml");
+
+        try {
+
+            ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-amqp-consumer.xml");
+        } catch (Exception e) {
+            LOG.error("[Consumer] error", e);
+        }
+
     }
 }
 

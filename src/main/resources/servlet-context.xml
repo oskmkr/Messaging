@@ -32,14 +32,18 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 		</mvc:interceptor>
 	</mvc:interceptors>
 
+	<!-- annotaion wiring -->
+	<!-- property & constructer-arg 제거 가능-->
+	<context:annotation-config/>
+
 	<!-- Configures support for @Controllers -->
+	<!-- bean 제거 가능 -->
 	<context:component-scan base-package="com.oskm" >
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
 	</context:component-scan>
-	<context:annotation-config/>
-	
+
 	
 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 	<!-- MappingJacksonHttpMessageConverter 를 추가하기ㅏ위해서  AnnotationMethodHandlerAdapter를 재정의하였다-->

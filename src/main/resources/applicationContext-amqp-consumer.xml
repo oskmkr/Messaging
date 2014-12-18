@@ -10,11 +10,12 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     <import resource="applicationContext-amqp-common.xml"/>
 
     <bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.JsonMessageConverter"/>
-    <rabbit:listener-container connection-factory="connectionFactory" message-converter="jsonMessageConverter" >
+    <!--recovery-interval="10000"-->
+    <rabbit:listener-container connection-factory="connectionFactory" message-converter="jsonMessageConverter" advice-chain="retryAdvice">
         <rabbit:listener queues="lionQueue" ref="messageConsumer" method="listen" />
         <rabbit:listener queues="tigerQueue,dogQueue" ref="messageConsumer" method="listen2" />
     </rabbit:listener-container>
 
     <bean id="messageConsumer" class="com.oskm.mq.rabbitmq.springamqp.MessageConsumer"/>
-
+    <bean id="retryAdvice" class="org.springframework.amqp.rabbit.config.StatefulRetryOperationsInterceptorFactoryBean" />
 </beans>

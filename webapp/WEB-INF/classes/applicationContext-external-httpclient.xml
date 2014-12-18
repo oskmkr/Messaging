@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans 
       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 	
-	<bean id="tmpCommonsHttpClientTemplate" class="com.oskm.support.remote.httpclient.CommonsHttpClientTemplate">
+	<bean id="naverMainCommonsHttpClientTemplate" class="com.oskm.support.remote.httpclient.CommonsHttpClientTemplate">
 		<constructor-arg index="0" value="http://www.naver.com" />
 		<constructor-arg index="1" value="GET" />
 		<property name="connectionTimeout" value="1000"/>

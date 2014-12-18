@@ -36,7 +36,12 @@
 		<level value="OFF"/>
 		<appender-ref ref="console"/>
 	</logger>
-	
+
+    <logger name="org.springframework.amqp.rabbit.listener.BlockingQueueConsumer" additivity="false">
+		<level value="OFF"/>
+		<appender-ref ref="console"/>
+	</logger>
+
 	<root>
 		<level value="DEBUG"/>
 		<appender-ref ref="console"/>

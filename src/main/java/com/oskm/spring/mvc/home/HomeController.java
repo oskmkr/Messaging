@@ -1,6 +1,12 @@
 package com.oskm.spring.mvc.home;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,7 +19,7 @@ import java.util.Map;
 
 @RequestMapping(value = "/")
 @Controller
-public class HomeController {
+public class HomeController implements BeanFactoryAware, ApplicationContextAware {
 
     private static final Logger LOG = Logger.getLogger(HomeController.class);
 
@@ -28,7 +34,7 @@ public class HomeController {
 		 * LOG.debug(">>>" + i);
 		 */
 
-        System.out.println("end...");
+        System.out.println("end..." + domain);
 
         return "Home";
     }
@@ -45,5 +51,18 @@ public class HomeController {
         String result = restTemplate.getForObject("http://cafe.naver.com?cdebug={cdebug}", String.class, params);
 
         return "crawlPage";
+    }
+
+    @Autowired
+    private Domain domain;
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        LOG.debug(beanFactory);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        LOG.debug(applicationContext);
     }
 }
