@@ -1,7 +1,8 @@
 package com.oskm.mq.rabbitmq.springamqp;
 
+import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.amqp.AmqpConnectException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -12,13 +13,16 @@ public class Consumer {
 
     public static void main(String[] args) {
 
+        run();
+    }
+
+    private static void run() {
+        ClassPathXmlApplicationContext ctx = null;
         try {
-
-            ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-amqp-consumer.xml");
+            ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-amqp-consumer.xml");
         } catch (Exception e) {
-            LOG.error("[Consumer] error", e);
+            LOG.error(e, e);
         }
-
     }
 }
 
