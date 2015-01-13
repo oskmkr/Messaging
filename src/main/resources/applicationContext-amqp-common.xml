@@ -19,7 +19,7 @@ http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <!-- A reference to the org.springframework.amqp.rabbit.connection.ConnectionFactory -->
-    <rabbit:connection-factory id="connectionFactory" addresses="localhost:5672,localhost:5673,localhost:5674,localhost:5675,localhost:5676, localhost:5677, , localhost:5678" username="guest" password="guest" virtual-host="/"  />
+    <rabbit:connection-factory id="connectionFactory" addresses="localhost:82" username="guest" password="guest" virtual-host="/"  />
 
     <bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.JsonMessageConverter"/>
 
@@ -28,6 +28,9 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <rabbit:queue name="ha.dogQueue">
         <rabbit:queue-arguments>
+            <entry key="x-ha-mode">
+                <value>all</value>
+            </entry>
             <entry key="x-message-ttl">
                 <value type="java.lang.Long">600000</value><!-- 10 minute -->
             </entry>
@@ -35,6 +38,9 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd">
     </rabbit:queue>
     <rabbit:queue name="ha.lionQueue">
         <rabbit:queue-arguments>
+            <entry key="x-ha-mode">
+                <value>all</value>
+            </entry>
             <entry key="x-message-ttl">
                 <value type="java.lang.Long">600000</value><!-- 10 minute -->
             </entry>
@@ -42,6 +48,9 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd">
     </rabbit:queue>
     <rabbit:queue name="ha.tigerQueue">
         <rabbit:queue-arguments>
+            <entry key="x-ha-mode">
+                <value>all</value>
+            </entry>
             <entry key="x-message-ttl">
                 <value type="java.lang.Long">600000</value><!-- 10 minute -->
             </entry>

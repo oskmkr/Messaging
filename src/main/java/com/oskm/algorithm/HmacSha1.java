@@ -12,6 +12,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -27,7 +28,7 @@ public class HmacSha1 {
 
         byte[] rawHmac = null;
 
-        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA_1);
+        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(Charset.forName("UTF-8")), HMAC_SHA_1);
 
         Mac mac = null;
         try {
