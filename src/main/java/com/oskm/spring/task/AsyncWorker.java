@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Created by sungkyu.eo on 2015-01-16.
+ *
  * @reference http://docs.spring.io/spring/docs/4.1.4.RELEASE/spring-framework-reference/html/scheduling.html
  */
 @Service
@@ -34,27 +35,30 @@ public class AsyncWorker {
 
         LOG.debug("# workLongTime .. start");
         int j = 0;
-        for (int i = 0; i < 100000000; i++) {
-            j += i;
-            LOG.debug("j : " + j);
+        for (int i = 0; i < 100; i++) {
+            LOG.debug("i : " + (j = i));
         }
 
         LOG.debug("# workLongTime .. end" + (System.currentTimeMillis() - startTime) + "ms");
     }
 
-    public Future<String> workLongTimeOutput() {
+
+    @Async
+    public Future<String> workLongTimeOutput(int len) {
 
         long startTime = System.currentTimeMillis();
 
         LOG.debug("# workLongTime .. start");
 
-        for (int i = 0; i < 10000; i++) {
-            int j = 0;
-            j += i;
+        int j = 0;
+
+        for (int i = 0; i < len; i++) {
+            LOG.debug("j : " + (j = i));
         }
 
-        LOG.debug("# workLongTime .. end" + (System.currentTimeMillis() - startTime) / 1000 + "ms");
+        LOG.debug("# workLongTime .. end" + (System.currentTimeMillis() - startTime) + "ms");
 
+        final int finalJ = j;
         return new Future<String>() {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
@@ -73,7 +77,7 @@ public class AsyncWorker {
 
             @Override
             public String get() throws InterruptedException, ExecutionException {
-                return "success";
+                return String.valueOf(finalJ);
             }
 
             @Override
