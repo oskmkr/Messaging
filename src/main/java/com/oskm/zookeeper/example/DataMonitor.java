@@ -12,18 +12,22 @@ package com.oskm.zookeeper.example;
  * A simple class that monitors the data and existence of a ZooKeeper
  * node. It uses asynchronous ZooKeeper APIs.
  */
-import java.util.Arrays;
 
+import org.apache.zookeeper.AsyncCallback.StatCallback;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.AsyncCallback.StatCallback;
-import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 public class DataMonitor implements Watcher, StatCallback {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DataMonitor.class);
     ZooKeeper zk;
 
     String znode;
@@ -84,6 +88,9 @@ public class DataMonitor implements Watcher, StatCallback {
                     break;
             }
         } else {
+
+            LOG.debug("# event..." + znode + "event type : " + event.getType());
+
             if (path != null && path.equals(znode)) {
                 // Something has changed on the node, let's find out
                 zk.exists(znode, true, this, null);
