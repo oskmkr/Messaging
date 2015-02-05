@@ -8,8 +8,39 @@
 
 package com.oskm.algorithm;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+
 /**
  * Created by sungkyu.eo on 2014-09-30.
  */
 public class Base64 {
+
+    public static String encode(byte[] rawHmac) throws UnsupportedEncodingException {
+        byte[] buf = null;
+        try {
+            Class Base64 = Class.forName("org.apache.commons.codec.binary.Base64");
+            Class[] parameterTypes = new Class[]{byte[].class};
+            Method encodeBase64 = Base64.getMethod("encodeBase64", parameterTypes);
+            buf = (byte[])encodeBase64.invoke(Base64, rawHmac);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return new String ( buf );
+
+    }
+
+    public static String decode(byte[] rawHmac) throws UnsupportedEncodingException {
+        byte[] buf = null;
+        try {
+            Class Base64 = Class.forName("org.apache.commons.codec.binary.Base64");
+            Class[] parameterTypes = new Class[]{byte[].class};
+            Method decodeBase64 = Base64.getMethod("decodeBase64", parameterTypes);
+            buf = (byte[])decodeBase64.invoke(Base64, rawHmac);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return new String ( buf , "UTF-8");
+
+    }
 }
