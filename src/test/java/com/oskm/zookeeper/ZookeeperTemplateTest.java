@@ -24,7 +24,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 
 public class ZookeeperTemplateTest {
@@ -66,7 +65,7 @@ public class ZookeeperTemplateTest {
 
         LOG.debug("result" + result);
 
-        for(String each : result) {
+        for (String each : result) {
             LOG.debug(each);
         }
     }

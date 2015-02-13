@@ -8,10 +8,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class HttpProxyTest {
 
-	private HttpProxy proxy = new HttpProxy();
-	
-	@Test
-	public void get() {
-		proxy.get();
-	}
+    private HttpProxy proxy = new HttpProxy();
+
+    @Test
+    public void get() {
+        proxy.get();
+    }
 }

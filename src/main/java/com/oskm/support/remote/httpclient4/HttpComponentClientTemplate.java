@@ -1,16 +1,13 @@
 package com.oskm.support.remote.httpclient4;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.URIException;
+import com.oskm.support.remote.httpclient.HttpClientException;
+import com.oskm.support.remote.httpclient.HttpClientExecutionFailException;
+import com.oskm.support.remote.httpclient.HttpClientParameters;
+import com.oskm.support.remote.httpclient.HttpClientTemplate;
+import com.oskm.support.remote.httpclient.parser.HttpResponseParseException;
+import com.oskm.support.remote.httpclient.parser.HttpResponseParser;
+import com.oskm.support.remote.httpclient.parser.ToStringResponseParser;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -21,15 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.SchemePortResolver;
 import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -38,177 +28,173 @@ import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
 
-import com.oskm.support.remote.httpclient.HttpClientException;
-import com.oskm.support.remote.httpclient.HttpClientExecutionFailException;
-import com.oskm.support.remote.httpclient.HttpClientParameters;
-import com.oskm.support.remote.httpclient.HttpClientTemplate;
-import com.oskm.support.remote.httpclient.parser.HttpResponseParseException;
-import com.oskm.support.remote.httpclient.parser.HttpResponseParser;
-import com.oskm.support.remote.httpclient.parser.ToStringResponseParser;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
 
 public class HttpComponentClientTemplate<Object> implements HttpClientTemplate {
-	private static Log LOG = LogFactory.getLog(HttpComponentClientTemplate.class);
+    private static Log LOG = LogFactory.getLog(HttpComponentClientTemplate.class);
 
-	private static final String GET_METHOD = "GET";
-	private static final String POST_METHOD = "POST";
-	private static final String DELETE_METHOD = "POST";
-	private static final String PUT_METHOD = "POST";
+    private static final String GET_METHOD = "GET";
+    private static final String POST_METHOD = "POST";
+    private static final String DELETE_METHOD = "POST";
+    private static final String PUT_METHOD = "POST";
 
-	private static final int DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS = 200;
-	private static final int DEFAULT_READ_TIMEOUT_MILLISECONDS = 2 * 1000;
-	private static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
-	private static final int DEFAULT_RETRY_COUNT = 3;
+    private static final int DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS = 200;
+    private static final int DEFAULT_READ_TIMEOUT_MILLISECONDS = 2 * 1000;
+    private static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
+    private static final int DEFAULT_RETRY_COUNT = 3;
 
-	public static final String DEFAULT_CONTENT_TYPE = "text/html";
-	public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String DEFAULT_CONTENT_TYPE = "text/html";
+    public static final String JSON_CONTENT_TYPE = "application/json";
 
-	private String url; // with template
-	private String methodType; // get or post
-	private String contentType = DEFAULT_CONTENT_TYPE; // contentType
-	private String contentCharset = DEFAULT_CONTENT_CHARSET; // for post method
-																// only
-	private String urlEncoding; // for get method only
-	private int tryCount = DEFAULT_RETRY_COUNT;
-	private int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS;
-	private int readTimeout = DEFAULT_READ_TIMEOUT_MILLISECONDS;
+    private String url; // with template
+    private String methodType; // get or post
+    private String contentType = DEFAULT_CONTENT_TYPE; // contentType
+    private String contentCharset = DEFAULT_CONTENT_CHARSET; // for post method
+    // only
+    private String urlEncoding; // for get method only
+    private int tryCount = DEFAULT_RETRY_COUNT;
+    private int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS;
+    private int readTimeout = DEFAULT_READ_TIMEOUT_MILLISECONDS;
 
-	private String proxyHost;
-	private Integer proxyPort;
+    private String proxyHost;
+    private Integer proxyPort;
 
-	public String getProxyHost() {
-		return proxyHost;
-	}
+    public String getProxyHost() {
+        return proxyHost;
+    }
 
-	public void setProxyHost(String proxyHost) {
-		this.proxyHost = proxyHost;
-	}
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
 
-	public Integer getProxyPort() {
-		return proxyPort;
-	}
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
 
-	public void setProxyPort(Integer proxyPort) {
-		this.proxyPort = proxyPort;
-	}
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
 
-	private HttpResponseParser httpResponseParser;
+    private HttpResponseParser httpResponseParser;
 
-	/**
-	 * @param url
-	 *            in case of GET method, wrap parameter value with {}. ex)
-	 *            http://api.nid.naver.com/nidapi/userinfo_api.nhn?code=
-	 *            AAC_userinfo_13&id={userId}
-	 * @param methodType
-	 */
-	public HttpComponentClientTemplate(String url, String methodType) {
-		this.url = url;
-		this.methodType = methodType;
-	}
+    /**
+     * @param url        in case of GET method, wrap parameter value with {}. ex)
+     *                   http://api.nid.naver.com/nidapi/userinfo_api.nhn?code=
+     *                   AAC_userinfo_13&id={userId}
+     * @param methodType
+     */
+    public HttpComponentClientTemplate(String url, String methodType) {
+        this.url = url;
+        this.methodType = methodType;
+    }
 
-	/**
-	 * 
-	 * @param url
-	 * @param methodType
-	 * @param contentType
-	 */
-	public HttpComponentClientTemplate(String url, String methodType, String contentType) {
-		this(url, methodType);
-		this.contentType = contentType;
-	}
+    /**
+     * @param url
+     * @param methodType
+     * @param contentType
+     */
+    public HttpComponentClientTemplate(String url, String methodType, String contentType) {
+        this(url, methodType);
+        this.contentType = contentType;
+    }
 
-	/**
-	 * @param requestParameters
-	 * @return
-	 * @throws HttpClientException
-	 * @throws IOException
-	 */
-	public Object execute(HttpClientParameters parameters) throws HttpClientException, IOException {
-		CloseableHttpClient httpClient = createHttpClient();
-		HttpUriRequest httpUriRequest = createHttpMethod(methodType, parameters);
+    /**
+     * @param requestParameters
+     * @return
+     * @throws HttpClientException
+     * @throws IOException
+     */
+    public Object execute(HttpClientParameters parameters) throws HttpClientException, IOException {
+        CloseableHttpClient httpClient = createHttpClient();
+        HttpUriRequest httpUriRequest = createHttpMethod(methodType, parameters);
 
-		return invoke(httpClient, httpUriRequest);
-	}
+        return invoke(httpClient, httpUriRequest);
+    }
 
-	/**
-	 * HttpClientException ¹ß»ý ½Ã throwÇÏÁö ¾Ê°í µðÆúÆ®°ª(¸®ÅÏÅ¸ÀÔÀÌ StringÀÎ °æ¿ì´Â °ø¹é, ´Ù¸¥ Å¸ÀÔÀÇ °æ¿ì´Â
-	 * null)À¸·Î ¸®ÅÏÇÏ´Â ¸Þ¼Òµå (client ÄÚµå¿¡¼­ Æ¯º°È÷ Ã³¸®ÇØÁÙ °ÍÀÌ ¾øÀ» ¶§ »ç¿ëÇÑ´Ù)
-	 * 
-	 * @param requestParameters
-	 * @return
-	 * @throws IOException
-	 */
-	public Object executeQuietly(HttpClientParameters parameters) throws IOException {
-		try {
-			return execute(parameters);
-		} catch (HttpClientException e) {
-			LOG.warn(e);
-			if (httpResponseParser instanceof ToStringResponseParser) {
-				return (Object) "";
-			}
-			return null;
-		}
-	}
+    /**
+     * HttpClientException ï¿½ß»ï¿½ ï¿½ï¿½ throwï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ Stringï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½Ù¸ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+     * null)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½ (client ï¿½Úµå¿¡ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½)
+     *
+     * @param requestParameters
+     * @return
+     * @throws IOException
+     */
+    public Object executeQuietly(HttpClientParameters parameters) throws IOException {
+        try {
+            return execute(parameters);
+        } catch (HttpClientException e) {
+            LOG.warn(e);
+            if (httpResponseParser instanceof ToStringResponseParser) {
+                return (Object) "";
+            }
+            return null;
+        }
+    }
 
-	protected CloseableHttpClient createHttpClient() {
+    protected CloseableHttpClient createHttpClient() {
 
-		// TODO : PoolingHttpClientConnectionManager µµ È®ÀÎ ÇÊ¿ä.
-		// new PoolingHttpClientConnectionManager();
-		HttpClientConnectionManager connManager = new BasicHttpClientConnectionManager();
+        // TODO : PoolingHttpClientConnectionManager ï¿½ï¿½ È®ï¿½ï¿½ ï¿½Ê¿ï¿½.
+        // new PoolingHttpClientConnectionManager();
+        HttpClientConnectionManager connManager = new BasicHttpClientConnectionManager();
 
-		CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(findRoutePlanner()).setConnectionManager(connManager).build();
+        CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(findRoutePlanner()).setConnectionManager(connManager).build();
 
 		/*
-		 * httpClient.getHttpConnectionManager().getParams().setConnectionTimeout
+         * httpClient.getHttpConnectionManager().getParams().setConnectionTimeout
 		 * (connectionTimeout);
 		 * httpClient.getHttpConnectionManager().getParams()
 		 * .setSoTimeout(readTimeout);
 		 */
-		return httpClient;
-	}
+        return httpClient;
+    }
 
-	private HttpRoutePlanner findRoutePlanner() {
+    private HttpRoutePlanner findRoutePlanner() {
 
-		if (StringUtils.isBlank(this.getProxyHost())) {
-			return new DefaultRoutePlanner(new DefaultSchemePortResolver());
-		}
+        if (StringUtils.isBlank(this.getProxyHost())) {
+            return new DefaultRoutePlanner(new DefaultSchemePortResolver());
+        }
 
-		HttpHost proxy = new HttpHost(this.getProxyHost(), this.getProxyPort());
-		DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+        HttpHost proxy = new HttpHost(this.getProxyHost(), this.getProxyPort());
+        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
 
-		return routePlanner;
-	}
+        return routePlanner;
+    }
 
-	private HttpUriRequest createHttpMethod(String methodType, HttpClientParameters parameters) throws HttpClientException {
+    private HttpUriRequest createHttpMethod(String methodType, HttpClientParameters parameters) throws HttpClientException {
 
-		HttpClientParameters httpParameters = parameters;
+        HttpClientParameters httpParameters = parameters;
 
-		if (httpParameters == null) {
-			httpParameters = new HttpClientParameters();
-		}
+        if (httpParameters == null) {
+            httpParameters = new HttpClientParameters();
+        }
 
-		String requestUrl = getRequestUrl(httpParameters.getRequestParameters());
+        String requestUrl = getRequestUrl(httpParameters.getRequestParameters());
 
-		HttpRequestBase httpMethod = null;
+        HttpRequestBase httpMethod = null;
 
-		if (GET_METHOD.equalsIgnoreCase(methodType)) {
-			httpMethod = new HttpGet(requestUrl);
-		} else if (PUT_METHOD.equalsIgnoreCase(methodType)) {
-			httpMethod = new HttpPut(requestUrl);
-		} else if (DELETE_METHOD.equalsIgnoreCase(methodType)) {
-			httpMethod = new HttpDelete(requestUrl);
-		} else { // post
-			httpMethod = new HttpPost(requestUrl);
-			// addParameters·Î Ãß°¡µÇ¸é body¸¦ ¸ÕÀú Áö¿ì°í ÆÄ¶ó¹ÌÅÍ°¡ ¼³Á¤µÈ´Ù. ÇÏ´ÜÀÇ entity ¼³Á¤½Ãµµ
-			// clear ÈÄ ¼³Á¤µÈ´Ù.
+        if (GET_METHOD.equalsIgnoreCase(methodType)) {
+            httpMethod = new HttpGet(requestUrl);
+        } else if (PUT_METHOD.equalsIgnoreCase(methodType)) {
+            httpMethod = new HttpPut(requestUrl);
+        } else if (DELETE_METHOD.equalsIgnoreCase(methodType)) {
+            httpMethod = new HttpDelete(requestUrl);
+        } else { // post
+            httpMethod = new HttpPost(requestUrl);
+            // addParametersï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ç¸ï¿½ bodyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½. ï¿½Ï´ï¿½ï¿½ï¿½ entity ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½
+            // clear ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½.
 			/*
 			 * postMethod.addParameters(httpParameters.getRequestParameters());
 			 * httpMethod = postMethod;
 			 */
-		}
+        }
 
-		if (null != httpMethod) {
-			httpMethod.setConfig(RequestConfig.custom().setConnectTimeout(connectionTimeout).setSocketTimeout(readTimeout).build());
-		}
+        if (null != httpMethod) {
+            httpMethod.setConfig(RequestConfig.custom().setConnectTimeout(connectionTimeout).setSocketTimeout(readTimeout).build());
+        }
 
 		/*
 		 * // set request headers for (Header header :
@@ -216,182 +202,182 @@ public class HttpComponentClientTemplate<Object> implements HttpClientTemplate {
 		 * httpMethod.addRequestHeader(header); }
 		 * 
 		 * // set request entity & content charset if (httpMethod instanceof
-		 * EntityEnclosingMethod) { // entity·Î body¿¡ ¼³Á¤µÇ¸é addParameters·Î ¼³Á¤µÈ
-		 * body´Â Å¬¸®¾î µÈ´Ù. processEntityEnclosingMethod(httpParameters,
+		 * EntityEnclosingMethod) { // entityï¿½ï¿½ bodyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ addParametersï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		 * bodyï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½È´ï¿½. processEntityEnclosingMethod(httpParameters,
 		 * httpMethod); }
 		 */
 
-		return httpMethod;
-	}
+        return httpMethod;
+    }
 
-	private void processEntityEnclosingMethod(HttpClientParameters parameters, HttpMethod httpMethod) {
-		// set content charset
-		httpMethod.getParams().setContentCharset(contentCharset);
+    private void processEntityEnclosingMethod(HttpClientParameters parameters, HttpMethod httpMethod) {
+        // set content charset
+        httpMethod.getParams().setContentCharset(contentCharset);
 
-		// set string request entity
-		if (parameters.getStringRequestEntityContent() != null) {
-			try {
-				RequestEntity requestEntity = new StringRequestEntity(parameters.getStringRequestEntityContent(), contentType, contentCharset);
-				((EntityEnclosingMethod) httpMethod).setRequestEntity(requestEntity);
-			} catch (UnsupportedEncodingException e) {
-				throw new HttpClientException(e.getMessage());
-			}
-		}
+        // set string request entity
+        if (parameters.getStringRequestEntityContent() != null) {
+            try {
+                RequestEntity requestEntity = new StringRequestEntity(parameters.getStringRequestEntityContent(), contentType, contentCharset);
+                ((EntityEnclosingMethod) httpMethod).setRequestEntity(requestEntity);
+            } catch (UnsupportedEncodingException e) {
+                throw new HttpClientException(e.getMessage());
+            }
+        }
 
-		// set multipart request entity
-		if (parameters.hasFileParameters()) {
-			MultipartRequestEntity multipartRequestEntity = new MultipartRequestEntity(parameters.getFileParts(), httpMethod.getParams());
-			((EntityEnclosingMethod) httpMethod).setRequestEntity(multipartRequestEntity);
-		}
-	}
+        // set multipart request entity
+        if (parameters.hasFileParameters()) {
+            MultipartRequestEntity multipartRequestEntity = new MultipartRequestEntity(parameters.getFileParts(), httpMethod.getParams());
+            ((EntityEnclosingMethod) httpMethod).setRequestEntity(multipartRequestEntity);
+        }
+    }
 
-	protected Object invoke(CloseableHttpClient httpClient, HttpUriRequest httpUriRequest) throws HttpClientException, IOException {
-		Object resultObject = null;
-		try {
-			CloseableHttpResponse response = null;
-			for (int i = 0; i < tryCount; i++) {
-				response = doExecuteMethod(httpClient, httpUriRequest);
+    protected Object invoke(CloseableHttpClient httpClient, HttpUriRequest httpUriRequest) throws HttpClientException, IOException {
+        Object resultObject = null;
+        try {
+            CloseableHttpResponse response = null;
+            for (int i = 0; i < tryCount; i++) {
+                response = doExecuteMethod(httpClient, httpUriRequest);
 
-				if (isSuccessfulStatus(response)) {
+                if (isSuccessfulStatus(response)) {
 
-					HttpEntity httpEntity = response.getEntity();
+                    HttpEntity httpEntity = response.getEntity();
 
-					resultObject = parseResponseBody(httpEntity.getContent());
-					break;
-				}
-			}
-			validateResponse(response);
-		} catch (HttpResponseParseException e) {
-			LOG.error("URL[" + httpUriRequest.getURI().getRawPath() + "]", e);
-			throw new HttpClientException(e.getMessage(), e);
-		} catch (Exception e) {
-			throw new HttpClientException(e.getMessage() + ", URL[" + httpUriRequest.getURI().getRawPath() + "]", e);
-		} finally {
-			httpClient.close();
-		}
-		return resultObject;
-	}
+                    resultObject = parseResponseBody(httpEntity.getContent());
+                    break;
+                }
+            }
+            validateResponse(response);
+        } catch (HttpResponseParseException e) {
+            LOG.error("URL[" + httpUriRequest.getURI().getRawPath() + "]", e);
+            throw new HttpClientException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new HttpClientException(e.getMessage() + ", URL[" + httpUriRequest.getURI().getRawPath() + "]", e);
+        } finally {
+            httpClient.close();
+        }
+        return resultObject;
+    }
 
-	private boolean isSuccessfulStatus(CloseableHttpResponse response) {
-		return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-	}
+    private boolean isSuccessfulStatus(CloseableHttpResponse response) {
+        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
+    }
 
-	protected String getURI(HttpMethod httpMethod) {
-		try {
-			return httpMethod.getURI().toString();
-		} catch (URIException e) {
-			return this.url;
-		}
-	}
+    protected String getURI(HttpMethod httpMethod) {
+        try {
+            return httpMethod.getURI().toString();
+        } catch (URIException e) {
+            return this.url;
+        }
+    }
 
-	protected CloseableHttpResponse doExecuteMethod(CloseableHttpClient httpClient, HttpUriRequest httpRequestBase) throws HttpException, IOException {
-		return httpClient.execute(httpRequestBase);
-	}
+    protected CloseableHttpResponse doExecuteMethod(CloseableHttpClient httpClient, HttpUriRequest httpRequestBase) throws HttpException, IOException {
+        return httpClient.execute(httpRequestBase);
+    }
 
-	protected void validateResponse(CloseableHttpResponse response) throws HttpClientExecutionFailException {
-		if (!isSuccessfulStatus(response)) {
-			throw new HttpClientExecutionFailException(response.getStatusLine().getStatusCode(), this.url);
-		}
-	}
+    protected void validateResponse(CloseableHttpResponse response) throws HttpClientExecutionFailException {
+        if (!isSuccessfulStatus(response)) {
+            throw new HttpClientExecutionFailException(response.getStatusLine().getStatusCode(), this.url);
+        }
+    }
 
-	protected boolean isSuccessfulStatus(HttpMethod httpMethod) {
-		return httpMethod.getStatusCode() == HttpStatus.SC_OK;
-	}
+    protected boolean isSuccessfulStatus(HttpMethod httpMethod) {
+        return httpMethod.getStatusCode() == HttpStatus.SC_OK;
+    }
 
-	protected Object parseResponseBody(InputStream responseBody) throws Exception {
-		if (httpResponseParser == null) {
-			return null;
-		}
-		return (Object) httpResponseParser.parse(responseBody);
-	}
+    protected Object parseResponseBody(InputStream responseBody) throws Exception {
+        if (httpResponseParser == null) {
+            return null;
+        }
+        return (Object) httpResponseParser.parse(responseBody);
+    }
 
-	protected String getRequestUrl(NameValuePair[] requestParameters) {
-		String requestUrl = this.url;
-		if (requestParameters.length == 0) {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("* CommonsHttpClientTemplate Request URL : " + requestUrl);
-			}
-			return requestUrl;
-		}
-		for (NameValuePair requestParam : requestParameters) {
-			requestUrl = StringUtils.replace(requestUrl, "{" + requestParam.getName() + "}", urlEncode(StringUtils.defaultString(requestParam.getValue())));
-		}
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("* CommonsHttpClientTemplate Request URL : " + requestUrl);
-		}
+    protected String getRequestUrl(NameValuePair[] requestParameters) {
+        String requestUrl = this.url;
+        if (requestParameters.length == 0) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("* CommonsHttpClientTemplate Request URL : " + requestUrl);
+            }
+            return requestUrl;
+        }
+        for (NameValuePair requestParam : requestParameters) {
+            requestUrl = StringUtils.replace(requestUrl, "{" + requestParam.getName() + "}", urlEncode(StringUtils.defaultString(requestParam.getValue())));
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("* CommonsHttpClientTemplate Request URL : " + requestUrl);
+        }
 
-		return requestUrl;
-	}
+        return requestUrl;
+    }
 
-	protected String urlEncode(String src) {
-		if (this.urlEncoding == null) {
-			return src;
-		}
+    protected String urlEncode(String src) {
+        if (this.urlEncoding == null) {
+            return src;
+        }
 
-		try {
-			return URLEncoder.encode(src, urlEncoding);
-		} catch (UnsupportedEncodingException e) {
-			throw new HttpClientException(e.getMessage());
-		}
-	}
+        try {
+            return URLEncoder.encode(src, urlEncoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new HttpClientException(e.getMessage());
+        }
+    }
 
-	public void setConnectionTimeout(int connectionTimeout) {
-		if (connectionTimeout < 0) {
-			throw new IllegalArgumentException("connectionTimeout must be a non-negative value");
-		}
-		this.connectionTimeout = connectionTimeout;
-	}
+    public void setConnectionTimeout(int connectionTimeout) {
+        if (connectionTimeout < 0) {
+            throw new IllegalArgumentException("connectionTimeout must be a non-negative value");
+        }
+        this.connectionTimeout = connectionTimeout;
+    }
 
-	public void setReadTimeout(int readTimeout) {
-		if (readTimeout < 0) {
-			throw new IllegalArgumentException("readTimeout must be a non-negative value");
-		}
-		this.readTimeout = readTimeout;
-	}
+    public void setReadTimeout(int readTimeout) {
+        if (readTimeout < 0) {
+            throw new IllegalArgumentException("readTimeout must be a non-negative value");
+        }
+        this.readTimeout = readTimeout;
+    }
 
-	public void setContentCharset(String contentCharset) {
-		this.contentCharset = contentCharset;
-	}
+    public void setContentCharset(String contentCharset) {
+        this.contentCharset = contentCharset;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
-	public void setTryCount(int tryCount) {
-		int tmpTryCount = tryCount;
+    public void setTryCount(int tryCount) {
+        int tmpTryCount = tryCount;
 
-		if (tmpTryCount < 1) {
-			tmpTryCount = 1;
-		}
-		this.tryCount = tmpTryCount;
-	}
+        if (tmpTryCount < 1) {
+            tmpTryCount = 1;
+        }
+        this.tryCount = tmpTryCount;
+    }
 
-	public void setHttpResponseParser(HttpResponseParser httpResponseParser) {
-		this.httpResponseParser = httpResponseParser;
-	}
+    public void setHttpResponseParser(HttpResponseParser httpResponseParser) {
+        this.httpResponseParser = httpResponseParser;
+    }
 
-	public void setUrlEncoding(String urlEncoding) {
-		this.urlEncoding = urlEncoding;
-	}
+    public void setUrlEncoding(String urlEncoding) {
+        this.urlEncoding = urlEncoding;
+    }
 
-	@Override
-	public Object execute(Map parameters) throws HttpClientException {
-		throw new UnsupportedOperationException(" * CommonsHttpClientTemplate.execute() is not supported any longer. use execute(Map<String, String>) method.");
-	}
+    @Override
+    public Object execute(Map parameters) throws HttpClientException {
+        throw new UnsupportedOperationException(" * CommonsHttpClientTemplate.execute() is not supported any longer. use execute(Map<String, String>) method.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.naver.cafe.support.remote.httpclient.HttpClientTemplate#execute()
-	 */
-	@Override
-	public Object execute() throws HttpClientException {
-		throw new UnsupportedOperationException(" * CommonsHttpClientTemplate.execute() is not supported any longer. use execute() method.");
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.naver.cafe.support.remote.httpclient.HttpClientTemplate#execute()
+     */
+    @Override
+    public Object execute() throws HttpClientException {
+        throw new UnsupportedOperationException(" * CommonsHttpClientTemplate.execute() is not supported any longer. use execute() method.");
+    }
 
 }

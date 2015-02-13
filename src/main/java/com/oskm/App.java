@@ -5,16 +5,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Hello world!
- *
  */
-public class App 
-{
-	private static Logger LOG = LoggerFactory.getLogger(App.class);
-	
-    public static void main( String[] args )
-    {
-    	
-    	LOG.debug("hi");
-    	
+public class App {
+    private static Logger LOG = LoggerFactory.getLogger(App.class);
+
+    public static void main(String[] args) {
+
+        LOG.debug("hi");
+
     }
 }

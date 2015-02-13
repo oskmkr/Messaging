@@ -31,11 +31,11 @@ public class SocketSender implements Runnable {
             BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
             BufferedWriter outWriter = new BufferedWriter(new OutputStreamWriter(out));
 
-            while(true) {
+            while (true) {
                 System.out.println("msg input : ");
                 String line = console.readLine();
 
-                if("bye".equals(line)) {
+                if ("bye".equals(line)) {
                     break;
                 }
 

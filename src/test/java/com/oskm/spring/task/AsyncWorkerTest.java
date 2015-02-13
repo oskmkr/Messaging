@@ -8,7 +8,6 @@
 
 package com.oskm.spring.task;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ public class AsyncWorkerTest {
         Future<String> future = worker.workLongTimeOutput(10);
         Future<String> future2 = worker.workLongTimeOutput(3);
 
-        String result =null, result2 = null;
+        String result = null, result2 = null;
 
         try {
             result = future.get();

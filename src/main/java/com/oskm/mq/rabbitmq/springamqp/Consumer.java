@@ -1,8 +1,6 @@
 package com.oskm.mq.rabbitmq.springamqp;
 
-import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.log4j.Logger;
-import org.springframework.amqp.AmqpConnectException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

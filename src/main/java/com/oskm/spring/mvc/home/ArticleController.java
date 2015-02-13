@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/")
 @Controller
 public class ArticleController {
-	
-	private static final Logger LOG = Logger.getLogger(ArticleController.class);
-	
-	//@Secured("ROLE_ADMIN")
-	@RequestMapping(value = "Article", method = { RequestMethod.GET })
-	@ResponseBody
-	public String read() {
-		LOG.debug("home..");
-		
-		return "Home";
-	}
+
+    private static final Logger LOG = Logger.getLogger(ArticleController.class);
+
+    //@Secured("ROLE_ADMIN")
+    @RequestMapping(value = "Article", method = {RequestMethod.GET})
+    @ResponseBody
+    public String read() {
+        LOG.debug("home..");
+
+        return "Home";
+    }
 }

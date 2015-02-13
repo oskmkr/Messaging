@@ -22,11 +22,11 @@ public class Base64 {
             Class Base64 = Class.forName("org.apache.commons.codec.binary.Base64");
             Class[] parameterTypes = new Class[]{byte[].class};
             Method encodeBase64 = Base64.getMethod("encodeBase64", parameterTypes);
-            buf = (byte[])encodeBase64.invoke(Base64, rawHmac);
-        } catch(Exception e) {
+            buf = (byte[]) encodeBase64.invoke(Base64, rawHmac);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new String ( buf );
+        return new String(buf);
 
     }
 
@@ -36,11 +36,11 @@ public class Base64 {
             Class Base64 = Class.forName("org.apache.commons.codec.binary.Base64");
             Class[] parameterTypes = new Class[]{byte[].class};
             Method decodeBase64 = Base64.getMethod("decodeBase64", parameterTypes);
-            buf = (byte[])decodeBase64.invoke(Base64, rawHmac);
-        } catch(Exception e) {
+            buf = (byte[]) decodeBase64.invoke(Base64, rawHmac);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new String ( buf , "UTF-8");
+        return new String(buf, "UTF-8");
 
     }
 }

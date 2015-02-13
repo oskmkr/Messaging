@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
 import java.util.List;
@@ -26,20 +25,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class WebAsyncTaskLongPollingController {
 
     final List<String> requestQueue = new CopyOnWriteArrayList<String>();
+
     /**
      * long polling 할 메소드
+     *
      * @return
      */
-    @RequestMapping(value="/async/webAsyncTask/get/message")
-    public @ResponseBody WebAsyncTask<String> pullMessage() {
+    @RequestMapping(value = "/async/webAsyncTask/get/message")
+    public
+    @ResponseBody
+    WebAsyncTask<String> pullMessage() {
         long timeout = 10000;
-        String timeoutResult = "timeout : " +  timeout + "ms";
+        String timeoutResult = "timeout : " + timeout + "ms";
 
         return new WebAsyncTask<String>(timeout, new Callable<String>() {
             @Override
             public String call() throws Exception {
-                while(true) {
-                    if(requestQueue.size() > 0) {
+                while (true) {
+                    if (requestQueue.size() > 0) {
                         String msg = requestQueue.get(0);
                         requestQueue.remove(0);
 
@@ -53,9 +56,10 @@ public class WebAsyncTaskLongPollingController {
 
     /**
      * 메세지를 전송.
+     *
      * @param message
      */
-    @RequestMapping(value="/async/webAsync/post/message")
+    @RequestMapping(value = "/async/webAsync/post/message")
     @ResponseBody
     public void postMessage(@RequestParam String message) {
         requestQueue.add(message);

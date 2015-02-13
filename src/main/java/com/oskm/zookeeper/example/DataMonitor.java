@@ -63,8 +63,7 @@ public class DataMonitor implements Watcher, StatCallback {
         /**
          * The ZooKeeper session is no longer valid.
          *
-         * @param rc
-         *                the ZooKeeper reason code
+         * @param rc the ZooKeeper reason code
          */
         void closing(int rc);
     }

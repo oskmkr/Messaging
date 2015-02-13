@@ -30,7 +30,7 @@ public class Publisher {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-            while(true ) {
+            while (true) {
                 String line = in.readLine();
                 if (line == null) {
                     break;

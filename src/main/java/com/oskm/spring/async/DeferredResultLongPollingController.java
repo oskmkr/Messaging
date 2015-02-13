@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by sungkyu.eo on 2014-12-09.
+ *
  * @see http://dev.anyframejava.org/docs/anyframe/plugin/optional/async-support/1.1.0/reference/html/ch03.html
  * @see https://www.google.co.kr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=5&ved=0CDMQFjAE&url=http%3A%2F%2Fopen.egovframe.go.kr%2Fcmm%2Ffms%2FFileDown.do%3Bjsessionid%3D8492B8525CD98F60717F6A2319DCD6B0%3FatchFileId%3DFILE_000000000006779%26fileSn%3D0&ei=zaSGVKa4MYaX8QXitoC4Cg&usg=AFQjCNHDrVpgUk1PmjIyTChUAsajpYaNrw&sig2=ptLBcLlZ7HdzxC1_SwInFA&bvm=bv.81449611,d.dGc&cad=rjt
  */
@@ -28,13 +29,15 @@ public class DeferredResultLongPollingController {
 
     /**
      * long polling 할 메소드
+     *
      * @return
      */
-    @RequestMapping(value="/async/deferredResult/get/message")
-    public @ResponseBody
+    @RequestMapping(value = "/async/deferredResult/get/message")
+    public
+    @ResponseBody
     DeferredResult<String> pullMessage() {
         long timeout = 10000;
-        String timeoutResult = "timeout : " +  timeout + "ms";
+        String timeoutResult = "timeout : " + timeout + "ms";
         final DeferredResult<String> deferredResult = new DeferredResult<String>(timeout, timeoutResult);
 
         requestQueue.add(deferredResult);
@@ -59,12 +62,13 @@ public class DeferredResultLongPollingController {
 
     /**
      * 메세지를 전송.
+     *
      * @param message
      */
-    @RequestMapping(value="/async/deferredResult/post/message")
+    @RequestMapping(value = "/async/deferredResult/post/message")
     @ResponseBody
     public void postMessage(@RequestParam String message) {
-        for(DeferredResult<String> deferredResult : requestQueue) {
+        for (DeferredResult<String> deferredResult : requestQueue) {
             deferredResult.setResult(message);
         }
 

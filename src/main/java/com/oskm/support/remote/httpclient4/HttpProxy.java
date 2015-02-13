@@ -1,9 +1,5 @@
 package com.oskm.support.remote.httpclient4;
 
-import java.io.IOException;
-
-import javax.ws.rs.core.Request;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -18,55 +14,57 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 public class HttpProxy {
 
-	private static final Logger LOG = Logger.getLogger(HttpProxy.class);
-	private String encoding = "UTF-8";
+    private static final Logger LOG = Logger.getLogger(HttpProxy.class);
+    private String encoding = "UTF-8";
 
-	/**
-	 * POST ¿äÃ» ¼öÇà
-	 */
-	public void post() {
-	}
+    /**
+     * POST ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½
+     */
+    public void post() {
+    }
 
-	/**
-	 * GET ¿äÃ» ¼öÇà
-	 */
-	public void get() {
+    /**
+     * GET ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½
+     */
+    public void get() {
 
-		HttpHost proxy = new HttpHost("168.219.61.252", 8080);
+        HttpHost proxy = new HttpHost("168.219.61.252", 8080);
 
-		DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
 
-		HttpGet httpGet = new HttpGet("http://www.naver.com");
+        HttpGet httpGet = new HttpGet("http://www.naver.com");
 
-		CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(routePlanner).build();
+        CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(routePlanner).build();
 
-		try {
+        try {
 
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+            ResponseHandler<String> responseHandler = new BasicResponseHandler();
 
-			CloseableHttpResponse response = httpClient.execute(httpGet);
+            CloseableHttpResponse response = httpClient.execute(httpGet);
 
-			LOG.debug("result : " + httpClient.execute(httpGet));
+            LOG.debug("result : " + httpClient.execute(httpGet));
 
-			StatusLine status = response.getStatusLine();
+            StatusLine status = response.getStatusLine();
 
-			LOG.debug("protocol version : " + response.getProtocolVersion());
-			LOG.debug("status code : " + response.getStatusLine().getStatusCode());
-			LOG.debug("reasonPhrase : " + response.getStatusLine().getReasonPhrase());
-			LOG.debug("status line : " + response.getStatusLine().toString());
+            LOG.debug("protocol version : " + response.getProtocolVersion());
+            LOG.debug("status code : " + response.getStatusLine().getStatusCode());
+            LOG.debug("reasonPhrase : " + response.getStatusLine().getReasonPhrase());
+            LOG.debug("status line : " + response.getStatusLine().toString());
 
-			HttpEntity entity = response.getEntity();
+            HttpEntity entity = response.getEntity();
 
-			LOG.debug(IOUtils.toString(entity.getContent(), encoding));
+            LOG.debug(IOUtils.toString(entity.getContent(), encoding));
 
-		} catch (ClientProtocolException e) {
+        } catch (ClientProtocolException e) {
 
-			LOG.debug(e, e);
-		} catch (IOException e) {
-			LOG.debug(e, e);
-		}
-	}
+            LOG.debug(e, e);
+        } catch (IOException e) {
+            LOG.debug(e, e);
+        }
+    }
 
 }

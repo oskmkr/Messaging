@@ -50,11 +50,11 @@ public class HmacSha1 {
             Class Base64 = Class.forName("org.apache.commons.codec.binary.Base64");
             Class[] parameterTypes = new Class[]{byte[].class};
             Method encodeBase64 = Base64.getMethod("encodeBase64", parameterTypes);
-            buf = (byte[])encodeBase64.invoke(Base64, rawHmac);
-        } catch(Exception e) {
+            buf = (byte[]) encodeBase64.invoke(Base64, rawHmac);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new String ( buf );
+        return new String(buf);
 
     }
 }

@@ -12,11 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.async.DeferredResult;
 
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by sungkyu.eo on 2014-12-09.
@@ -42,7 +39,7 @@ public class CollableArticleReadController {
                  * 4. etc
                  */
                 int j = 0;
-                for(int i=0; i < count;i++) {
+                for (int i = 0; i < count; i++) {
                     System.out.println(i);
                     Thread.sleep(1000);
                     j = i;

@@ -20,7 +20,7 @@ public class Domain {
     }
 
     private static Domain getInstance() {
-        if(null == INSTANCE) {
+        if (null == INSTANCE) {
             INSTANCE = new Domain();
         }
 

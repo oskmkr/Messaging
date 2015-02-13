@@ -3,26 +3,25 @@ package com.oskm.apns;
 import javapns.Push;
 import javapns.communication.exceptions.CommunicationException;
 import javapns.communication.exceptions.KeystoreException;
-
 import org.apache.log4j.Logger;
 
 public class APNSMessageSender {
 
-	private static final Logger LOG = Logger.getLogger(APNSMessageSender.class);
+    private static final Logger LOG = Logger.getLogger(APNSMessageSender.class);
 
-	public void send() {
-		try {
-			Push.alert("Hello World!", "D:\\_dev\\workspace\\shs-smg-batch_trunk\\src\\java\\com\\sec\\pcw\\smg\\apns\\certificate\\smarthomelauncher-dev.p12", "samsung", false, "3fbf5d36e9c8ce61a7734f27b9a6633c8c2f1bfeb4a754147c1653cdc2ac2dbb");
-			
-		} catch (CommunicationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (KeystoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-	}
-	/*
+    public void send() {
+        try {
+            Push.alert("Hello World!", "D:\\_dev\\workspace\\shs-smg-batch_trunk\\src\\java\\com\\sec\\pcw\\smg\\apns\\certificate\\smarthomelauncher-dev.p12", "samsung", false, "3fbf5d36e9c8ce61a7734f27b9a6633c8c2f1bfeb4a754147c1653cdc2ac2dbb");
+
+        } catch (CommunicationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (KeystoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    /*
 	public void send() {
 
 		PushNotificationManager pushManager = PushNotificationManager.getInstance();

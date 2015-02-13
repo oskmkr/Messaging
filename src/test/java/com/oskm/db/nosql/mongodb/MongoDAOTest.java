@@ -17,9 +17,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class MongoDAOTest {
     private static final Logger LOG = LoggerFactory.getLogger(MongoDAOTest.class);
@@ -38,7 +37,7 @@ public class MongoDAOTest {
 
         assertThat(result.size(), greaterThan(0));
 
-        for(DBObject each : result) {
+        for (DBObject each : result) {
             LOG.debug("data : " + String.valueOf(each));
         }
 

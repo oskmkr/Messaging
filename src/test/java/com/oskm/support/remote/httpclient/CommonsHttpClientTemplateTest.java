@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationContext-external-httpclient.xml", "classpath:applicationContext-propertyplaceholder.xml"})
 public class CommonsHttpClientTemplateTest {
@@ -37,14 +35,13 @@ public class CommonsHttpClientTemplateTest {
 
         long currentTime = System.currentTimeMillis();
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
             String actual = client.execute(params);
             LOG.debug("[result]", actual);
 
             LOG.info("[elapsed time] " + String.valueOf(System.currentTimeMillis() - currentTime));
 
         }
-
 
 
     }

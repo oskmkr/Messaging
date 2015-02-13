@@ -10,10 +10,10 @@ import javax.ws.rs.Produces;
 @Path(value = "/")
 */
 public class HomeRestEasyController {
-	
-	private static final Logger LOG = Logger.getLogger(HomeRestEasyController.class);
+
+    private static final Logger LOG = Logger.getLogger(HomeRestEasyController.class);
 /*
-	//@Secured("ROLE_ADMIN")
+    //@Secured("ROLE_ADMIN")
 	@GET
 	@Path("/Home")
 	@Produces("text/html")
