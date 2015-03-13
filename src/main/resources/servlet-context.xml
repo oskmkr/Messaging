@@ -60,7 +60,7 @@ http://www.springframework.org/schema/mvc http://www.springframework.org/schema/
                 </bean>
                 <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
                 <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
             </list>
         </property>
         <property name="webBindingInitializer">
@@ -79,7 +79,7 @@ http://www.springframework.org/schema/mvc http://www.springframework.org/schema/
                 </bean>
                 <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
                 <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
-                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
             </list>
         </property>
     </bean>
