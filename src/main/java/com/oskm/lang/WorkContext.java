@@ -6,15 +6,11 @@
  * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
-package com.oskm.spring.mvc.home;
-
-import org.springframework.stereotype.Service;
+package com.oskm.lang;
 
 /**
- * Created by sungkyu.eo on 2015-03-13.
+ * Created by sungkyu.eo on 2015-03-20.
  */
-@Service
-public class MemberBO {
-
-
+public class WorkContext {
+    public static ThreadLocal<Status> local = new ThreadLocal<>();
 }

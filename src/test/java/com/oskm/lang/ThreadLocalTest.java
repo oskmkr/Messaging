@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.util.Random;
 
 /**
+ * thread 사이에서의 데이터 공유
  * Created by sungkyu.eo on 2015-03-02.
  */
 public class ThreadLocalTest {

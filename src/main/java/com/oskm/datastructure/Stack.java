@@ -6,15 +6,25 @@
  * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
-package com.oskm.spring.mvc.home;
+package com.oskm.datastructure;
 
-import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Created by sungkyu.eo on 2015-03-13.
+ * Created by sungkyu.eo on 2015-03-20.
  */
-@Service
-public class MemberBO {
+public class Stack {
+
+    public void put() {
+
+        List<String> synchronizedList = Collections.synchronizedList(new ArrayList<String>());
 
 
+    }
+
+    public void get() {
+
+    }
 }

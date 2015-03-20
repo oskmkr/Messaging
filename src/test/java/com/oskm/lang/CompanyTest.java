@@ -6,15 +6,17 @@
  * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
-package com.oskm.spring.mvc.home;
+package com.oskm.lang;
 
-import org.springframework.stereotype.Service;
+import org.junit.Test;
 
-/**
- * Created by sungkyu.eo on 2015-03-13.
- */
-@Service
-public class MemberBO {
+public class CompanyTest {
 
+    private Company company = new Company();
+
+    @Test
+    public void run() {
+
+    }
 
 }
