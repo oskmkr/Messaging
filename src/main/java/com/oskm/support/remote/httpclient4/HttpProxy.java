@@ -8,13 +8,24 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 public class HttpProxy {
 
@@ -36,9 +47,11 @@ public class HttpProxy {
 
         DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
 
-        HttpGet httpGet = new HttpGet("http://www.naver.com");
+        HttpGet httpGet = new HttpGet("https://www.google.com");
 
-        CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(routePlanner).build();
+        LayeredConnectionSocketFactory sslSocketFactory = findSslConnectionSocketFactory();
+
+        CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(routePlanner).setSSLSocketFactory(sslSocketFactory).build();
 
         try {
 
@@ -65,6 +78,29 @@ public class HttpProxy {
         } catch (IOException e) {
             LOG.debug(e, e);
         }
+    }
+
+    private SSLConnectionSocketFactory findSslConnectionSocketFactory() {
+        KeyStore trustStore = null;
+        SSLContext sslContext = null;
+        try {
+            trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            TrustStrategy allTrust = new TrustStrategy() {
+                @Override
+                public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    return true;
+                }
+            };
+            sslContext = SSLContexts.custom().useTLS().loadTrustMaterial(trustStore, allTrust).build();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+
+        return new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
     }
 
 }
