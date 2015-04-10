@@ -116,8 +116,7 @@ public class HttpComponentClientTemplate<Object> implements HttpClientTemplate {
     }
 
     /**
-     * HttpClientException �߻� �� throw���� �ʰ� ����Ʈ��(����Ÿ���� String�� ���� ����, �ٸ� Ÿ���� ����
-     * null)���� �����ϴ� �޼ҵ� (client �ڵ忡�� Ư���� ó������ ���� ���� �� ����Ѵ�)
+     *
      *
      * @param requestParameters
      * @return
@@ -137,7 +136,7 @@ public class HttpComponentClientTemplate<Object> implements HttpClientTemplate {
 
     protected CloseableHttpClient createHttpClient() {
 
-        // TODO : PoolingHttpClientConnectionManager �� Ȯ�� �ʿ�.
+        // TODO : PoolingHttpClientConnectionManager
         // new PoolingHttpClientConnectionManager();
         HttpClientConnectionManager connManager = new BasicHttpClientConnectionManager();
 
