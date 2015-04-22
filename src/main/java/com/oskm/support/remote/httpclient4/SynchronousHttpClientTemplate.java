@@ -10,17 +10,11 @@ package com.oskm.support.remote.httpclient4;
 
 import com.oskm.support.remote.httpclient.HttpClientException;
 import com.oskm.support.remote.httpclient.HttpClientExecutionFailException;
-import com.oskm.support.remote.httpclient.HttpClientParameters;
 import com.oskm.support.remote.httpclient.parser.HttpResponseParseException;
 import com.oskm.support.remote.httpclient.parser.HttpResponseParser;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
@@ -28,10 +22,12 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -48,12 +44,20 @@ import java.util.Map;
 
 /**
  * classic synchronous I/O
- * <p>
+ * <p/>
  * Created by sungkyu.eo on 2015-04-02.
  */
 public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     private static final Logger LOG = LoggerFactory.getLogger(SynchronousHttpClientTemplate.class);
     private int tryCount = 3;
+
+    public SynchronousHttpClientTemplate() {
+    }
+
+    public SynchronousHttpClientTemplate(String url, String methodType) {
+        this.url = url;
+        this.methodType = methodType;
+    }
 
     @Override
     public T execute(Map<String, String> parameters) throws HttpClientException {
@@ -98,7 +102,15 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         //HttpClientConnectionManager connManager = new BasicHttpClientConnectionManager();
 
         //CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(proxyManager.findRoutePlanner())/*.setConnectionManager(connManager)*/.build();
-        CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(proxyManager.findRoutePlanner()).setSSLSocketFactory(findSslConnectionSocketFactory()).build();
+
+
+        HttpClientBuilder httpClientBuilder = HttpClients.custom().setSSLSocketFactory(findSslConnectionSocketFactory());
+
+        if (null != proxyManager) {
+            httpClientBuilder.setRoutePlanner(proxyManager.findRoutePlanner());
+        }
+
+        CloseableHttpClient httpClient = httpClientBuilder.build();
 
 		/*
          * httpClient.getHttpConnectionManager().getParams().setConnectionTimeout
@@ -121,19 +133,22 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 
         HttpRequestBase httpMethod = null;
 
-        if (POST_METHOD.equalsIgnoreCase(methodType)) {
-            httpMethod = new HttpPost(requestUrl);
-        } else if (PUT_METHOD.equalsIgnoreCase(methodType)) {
-            httpMethod = new HttpPut(requestUrl);
-        } else if (DELETE_METHOD.equalsIgnoreCase(methodType)) {
-            httpMethod = new HttpDelete(requestUrl);
-        } else { // post
+
+        if (HttpGet.METHOD_NAME.equalsIgnoreCase(methodType)) {
             httpMethod = new HttpGet(requestUrl);
+        } else if (HttpPut.METHOD_NAME.equalsIgnoreCase(methodType)) {
+            httpMethod = new HttpPut(requestUrl);
+        } else if (HttpDelete.METHOD_NAME.equalsIgnoreCase(methodType)) {
+            httpMethod = new HttpDelete(requestUrl);
+        } else if (HttpHead.METHOD_NAME.equalsIgnoreCase(methodType)) {
+            httpMethod = new HttpHead(requestUrl);
+        } else if (HttpTrace.METHOD_NAME.equalsIgnoreCase(methodType)) {
+            httpMethod = new HttpTrace(requestUrl);
+        } else { // post
+            httpMethod = new HttpPost(requestUrl);
         }
 
-        if (null != httpMethod) {
-            httpMethod.setConfig(RequestConfig.custom().setConnectTimeout(connectionTimeout).setSocketTimeout(readTimeout).build());
-        }
+        httpMethod.setConfig(RequestConfig.custom().setConnectTimeout(connectionTimeout).setSocketTimeout(readTimeout).build());
 
 		/*
          * // set request headers for (Header header :
@@ -147,27 +162,6 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 		 */
 
         return httpMethod;
-    }
-
-    private void processEntityEnclosingMethod(HttpClientParameters parameters, HttpMethod httpMethod) {
-        // set content charset
-        httpMethod.getParams().setContentCharset(contentCharset);
-
-        // set string request entity
-        if (parameters.getStringRequestEntityContent() != null) {
-            try {
-                RequestEntity requestEntity = new StringRequestEntity(parameters.getStringRequestEntityContent(), contentType, contentCharset);
-                ((EntityEnclosingMethod) httpMethod).setRequestEntity(requestEntity);
-            } catch (UnsupportedEncodingException e) {
-                throw new HttpClientException(e.getMessage());
-            }
-        }
-
-        // set multipart request entity
-        if (parameters.hasFileParameters()) {
-            MultipartRequestEntity multipartRequestEntity = new MultipartRequestEntity(parameters.getFileParts(), httpMethod.getParams());
-            ((EntityEnclosingMethod) httpMethod).setRequestEntity(multipartRequestEntity);
-        }
     }
 
     protected T invoke(CloseableHttpClient httpClient, HttpUriRequest httpUriRequest) throws HttpClientException, IOException {
@@ -261,7 +255,6 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         return new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
     }
 
-
     protected T parseResponseBody(InputStream responseBody) throws Exception {
         if (httpResponseParser == null) {
             return null;
@@ -278,13 +271,8 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     private int connectionTimeout;
     private int readTimeout;
 
-    private static final String GET_METHOD = "GET";
-    private static final String POST_METHOD = "POST";
-    private static final String DELETE_METHOD = "DELETE";
-    private static final String PUT_METHOD = "PUT";
-
-
     @Autowired
+    @Qualifier("proxyManager")
     private ProxyManager proxyManager;
 
     public void setUrl(String url) {
@@ -308,7 +296,6 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     }
 
     public void setUrlEncoding(String urlEncoding) {
-
         this.urlEncoding = urlEncoding;
     }
 

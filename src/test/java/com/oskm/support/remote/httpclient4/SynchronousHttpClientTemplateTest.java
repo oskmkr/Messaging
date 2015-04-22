@@ -21,15 +21,14 @@ public class SynchronousHttpClientTemplateTest {
 
     private SynchronousHttpClientTemplate<String> httpClient = new SynchronousHttpClientTemplate<>();
 
+    private ProxyManager proxyManager = new ProxyManager();
+
     @Before
     public void before() {
 
-        ProxyManager proxyManager = new ProxyManager();
+
         proxyManager.setProxyHost("168.219.61.252");
         proxyManager.setProxyPort(8080);
-
-        httpClient.setProxyManager(proxyManager);
-
     }
 
     @Test
@@ -42,6 +41,7 @@ public class SynchronousHttpClientTemplateTest {
         httpClient.setConnectionTimeout(1000);
         httpClient.setReadTimeout(2000);
         httpClient.setContentCharset("euc-kr");
+        httpClient.setProxyManager(proxyManager);
         httpClient.setHttpResponseParser(new ToStringResponseParser());
 
         String result = httpClient.execute(param);
@@ -55,13 +55,86 @@ public class SynchronousHttpClientTemplateTest {
 
         HttpClientParam param = new HttpClientParam();
 
-        httpClient.setUrl("http://cafe.naver.com");
+        httpClient.setUrl("http://www.naver.com");
+        httpClient.setConnectionTimeout(1000);
+        httpClient.setReadTimeout(2000);
+        httpClient.setContentCharset("utf-8");
+        httpClient.setProxyManager(proxyManager);
+        httpClient.setHttpResponseParser(new ToStringResponseParser());
+
+        param.addRequestParameter("cdebug", "true");
+
+        String result = httpClient.execute(param);
+
+        LOG.debug(result);
+
+    }
+
+    @Test
+    public void GET_users() throws IOException {
+
+        HttpClientParam param = new HttpClientParam();
+
+        httpClient.setUrl("http://localhost:3000/users");
+        httpClient.setMethodType("GET");
+        httpClient.setConnectionTimeout(1000);
+        httpClient.setReadTimeout(5000);
+        httpClient.setContentCharset("utf-8");
+        httpClient.setHttpResponseParser(new ToStringResponseParser());
+
+        String result = httpClient.execute(param);
+
+        LOG.debug(result);
+
+    }
+
+    @Test
+    public void POST_users() throws IOException {
+
+        HttpClientParam param = new HttpClientParam();
+
+        httpClient.setUrl("http://localhost:3000/users");
+        httpClient.setMethodType("POST");
         httpClient.setConnectionTimeout(1000);
         httpClient.setReadTimeout(2000);
         httpClient.setContentCharset("utf-8");
         httpClient.setHttpResponseParser(new ToStringResponseParser());
 
-        param.addRequestParameter("cdebug", "true");
+        String result = httpClient.execute(param);
+
+        LOG.debug(result);
+
+    }
+
+    @Test
+    public void PUT_users() throws IOException {
+
+        HttpClientParam param = new HttpClientParam();
+
+        httpClient.setUrl("http://localhost:3000/users/updateduser");
+        httpClient.setMethodType("PUT");
+        httpClient.setConnectionTimeout(1000);
+        httpClient.setReadTimeout(2000);
+        httpClient.setContentCharset("utf-8");
+        httpClient.setHttpResponseParser(new ToStringResponseParser());
+
+        String result = httpClient.execute(param);
+
+        LOG.debug(result);
+
+    }
+
+    @Test
+    public void DELETE_users() throws IOException {
+
+        HttpClientParam param = new HttpClientParam();
+
+        httpClient.setUrl("http://localhost:3000/users/deleteid");
+        httpClient.setMethodType("DELETE");
+        httpClient.setConnectionTimeout(1000);
+        httpClient.setReadTimeout(2000);
+        httpClient.setContentCharset("utf-8");
+        httpClient.setHttpResponseParser(new ToStringResponseParser());
 
         String result = httpClient.execute(param);
 
