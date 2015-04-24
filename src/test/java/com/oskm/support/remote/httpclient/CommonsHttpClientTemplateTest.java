@@ -35,13 +35,10 @@ public class CommonsHttpClientTemplateTest {
 
         long currentTime = System.currentTimeMillis();
 
-        for (int i = 0; i < 100; i++) {
-            String actual = client.execute(params);
-            LOG.debug("[result]", actual);
+        String actual = client.execute(params);
+        LOG.debug("[result]", actual);
 
-            LOG.info("[elapsed time] " + String.valueOf(System.currentTimeMillis() - currentTime));
-
-        }
+        LOG.info("[elapsed time] " + String.valueOf(System.currentTimeMillis() - currentTime));
 
 
     }

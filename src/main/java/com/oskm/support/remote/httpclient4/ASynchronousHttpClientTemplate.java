@@ -13,33 +13,30 @@ import com.oskm.support.remote.httpclient.HttpClientExecutionFailException;
 import com.oskm.support.remote.httpclient.parser.HttpResponseParseException;
 import com.oskm.support.remote.httpclient.parser.HttpResponseParser;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.*;
-import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -47,20 +44,21 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
- * classic synchronous I/O
+ * Asynchronous I/O
  * <p/>
  * Created by sungkyu.eo on 2015-04-02.
  */
-public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
-    private static final Logger LOG = LoggerFactory.getLogger(SynchronousHttpClientTemplate.class);
+public class ASynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
+    private static final Logger LOG = LoggerFactory.getLogger(ASynchronousHttpClientTemplate.class);
     private int tryCount = 3;
 
-    public SynchronousHttpClientTemplate() {
+    public ASynchronousHttpClientTemplate() {
     }
 
-    public SynchronousHttpClientTemplate(String url, String methodType) {
+    public ASynchronousHttpClientTemplate(String url, String methodType) {
         this.url = url;
         this.methodType = methodType;
     }
@@ -86,78 +84,72 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         }
 
     }
+/*
+
+    public T execute(HttpClientParam param) throws HttpClientException, IOException {
+
+        try {
+            httpClient.start();
+
+            HttpGet httpGet = new HttpGet("http://www.samsung.net/112123.nhn");
+
+            Future<HttpResponse> future = httpClient.execute(httpGet, new FutureCallback<HttpResponse>() {
+
+                @Override
+                public void failed(Exception arg0) {
+                    LOG.debug("## failed");
+
+                }
+
+                @Override
+                public void completed(HttpResponse arg0) {
+                    LOG.debug("## completed");
+
+                }
+
+                @Override
+                public void cancelled() {
+                    LOG.debug("## canceled");
+
+                }
+            });
+
+            HttpResponse response = future.get();
+
+            LOG.debug("Response : " + response.getStatusLine());
+            LOG.debug("Shutting down");
+
+        } catch (Exception e) {
+            LOG.error(e, e);
+        } finally {
+            httpClient.close();
+        }
+
+        LOG.debug("async http request done...");
+    }
+*/
 
     public T execute(HttpClientParam parameters) throws HttpClientException, IOException {
-        CloseableHttpClient httpClient = createHttpClient();
+        CloseableHttpAsyncClient httpClient = createHttpAsyncClient();
         HttpUriRequest httpUriRequest = createHttpMethod(methodType, parameters);
 
         return invoke(httpClient, httpUriRequest);
     }
 
-    protected CloseableHttpClient createHttpClient() {
+    protected CloseableHttpAsyncClient createHttpAsyncClient() {
 
         // TODO : PoolingHttpClientConnectionManager
         //HttpClientConnectionManager connManager = new BasicHttpClientConnectionManager();
 
-        //CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(proxyManager.findRoutePlanner())/*.setConnectionManager(connManager)*/.build();
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000).setConnectTimeout(3000).build();
 
-
-        HttpClientBuilder httpClientBuilder = HttpClients.custom().setSSLSocketFactory(findSslConnectionSocketFactory());
+        HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom().setDefaultRequestConfig(requestConfig);/*.setSSLSocketFactory(findSslConnectionSocketFactory())*/
 
         if (null != proxyManager) {
             httpClientBuilder.setRoutePlanner(proxyManager.findRoutePlanner());
         }
 
-
-
-        httpClientBuilder.setRetryHandler(new HttpRequestRetryHandler() {
-            @Override
-            public boolean retryRequest(IOException e, int executionCount, HttpContext httpContext) {
-
-                if(executionCount > tryCount) {
-                    return false;
-                }
-
-                if(e instanceof InterruptedIOException) {
-                    // Timeout
-                    return false;
-                }
-
-                if(e instanceof UnknownHostException) {
-                    // Unknown Host
-                    return false;
-                }
-
-                if(e instanceof ConnectTimeoutException) {
-                    // Connection Refused
-                    return false;
-                }
-
-                if(e instanceof SSLException) {
-                    // SSL handshake exception
-                    return false;
-                }
-
-                // java.net.SocketTimeoutException
-                HttpClientContext clientContext = HttpClientContext.adapt(httpContext);
-
-                HttpRequest request = clientContext.getRequest();
-
-                boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
-
-                if(idempotent) {
-
-                    // retry if the request is considered idempotent
-                    return true;
-                }
-
-                return false;
-            }
-        });
-
-        //httpClientBuilder.setConnectionManager()
-
-        CloseableHttpClient httpClient = httpClientBuilder.build();
+        CloseableHttpAsyncClient httpClient = httpClientBuilder.build();
 
 		/*
          * httpClient.getHttpConnectionManager().getParams().setConnectionTimeout
@@ -211,19 +203,32 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         return httpMethod;
     }
 
-    /**
-     *@reference http://fahdshariff.blogspot.kr/2009/08/retrying-operations-in-java.html
-     * IOException - read timeout , connection timeout 에 대한 retry 가 부족하며, retry delay 역시 필요하다.
-     * 이에 대한 개선이 필요함.
-     */
-    protected T invoke(CloseableHttpClient httpClient, HttpUriRequest httpUriRequest) throws HttpClientException, IOException {
+    protected T invoke(CloseableHttpAsyncClient httpClient, HttpUriRequest httpUriRequest) throws HttpClientException, IOException {
         T resultObject = null;
         try {
-            CloseableHttpResponse response = null;
+            Future<HttpResponse> future = null;
+
+            httpClient.start();
 
             for (int i = 0; i < tryCount; i++) {
+                future = httpClient.execute(httpUriRequest, new FutureCallback<HttpResponse>() {
+                    @Override
+                    public void completed(HttpResponse httpResponse) {
 
-                response = httpClient.execute(httpUriRequest);
+                    }
+
+                    @Override
+                    public void failed(Exception e) {
+
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
+                HttpResponse response = future.get();
 
                 if (isSuccessfulStatus(response)) {
 
@@ -233,10 +238,8 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
                     resultObject = parseResponseBody(httpEntity.getContent());
                     break;
                 }
-
+                validateResponse(response);
             }
-
-            validateResponse(response);
         } catch (HttpResponseParseException e) {
             LOG.error("URL[" + httpUriRequest.getURI().getRawPath() + "]", e);
             throw new HttpClientException(e.getMessage(), e);
@@ -248,11 +251,11 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         return resultObject;
     }
 
-    private boolean isSuccessfulStatus(CloseableHttpResponse response) {
+    private boolean isSuccessfulStatus(HttpResponse response) {
         return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
 
-    protected void validateResponse(CloseableHttpResponse response) throws HttpClientExecutionFailException {
+    protected void validateResponse(HttpResponse response) throws HttpClientExecutionFailException {
         if (!isSuccessfulStatus(response)) {
             throw new HttpClientExecutionFailException(response.getStatusLine().getStatusCode(), this.url);
         }
@@ -311,7 +314,7 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         return new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
     }
 
-    protected T parseResponseBody(InputStream responseBody) {
+    protected T parseResponseBody(InputStream responseBody) throws Exception {
         if (httpResponseParser == null) {
             return null;
         }

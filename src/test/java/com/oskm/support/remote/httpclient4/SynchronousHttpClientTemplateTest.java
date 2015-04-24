@@ -75,12 +75,16 @@ public class SynchronousHttpClientTemplateTest {
 
         HttpClientParam param = new HttpClientParam();
 
-        httpClient.setUrl("http://localhost:3000/users");
+        httpClient.setUrl("http://localhost:3000/users?delay={delay}");
         httpClient.setMethodType("GET");
         httpClient.setConnectionTimeout(1000);
-        httpClient.setReadTimeout(5000);
+        httpClient.setReadTimeout(2000);
         httpClient.setContentCharset("utf-8");
         httpClient.setHttpResponseParser(new ToStringResponseParser());
+        httpClient.setTryCount(3);
+
+
+        param.addRequestParameter("delay", "true");
 
         String result = httpClient.execute(param);
 
