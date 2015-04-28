@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SynchronousHttpClientTemplateTest {
     private static final Logger LOG = LoggerFactory.getLogger(SynchronousHttpClientTemplate.class);
@@ -25,7 +27,6 @@ public class SynchronousHttpClientTemplateTest {
 
     @Before
     public void before() {
-
 
         proxyManager.setProxyHost("168.219.61.252");
         proxyManager.setProxyPort(8080);
@@ -83,8 +84,7 @@ public class SynchronousHttpClientTemplateTest {
         httpClient.setHttpResponseParser(new ToStringResponseParser());
         httpClient.setTryCount(3);
 
-
-        param.addRequestParameter("delay", "true");
+        param.addRequestParameter("delay", "false");
 
         String result = httpClient.execute(param);
 
@@ -146,4 +146,15 @@ public class SynchronousHttpClientTemplateTest {
 
     }
 
+    @Test
+    public void test() {
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "a");
+        map.put("2", "b");
+        map.put("3", "c");
+
+        map.forEach((s, s2) -> {
+            LOG.debug("s : " + s + ", s2 : " + s2);
+        });
+    }
 }

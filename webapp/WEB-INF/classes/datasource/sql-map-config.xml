@@ -5,6 +5,6 @@
         <typeAlias alias="member" type="com.oskm.spring.mvc.home.Member"/>
     </typeAliases>
     <mappers>
-        <mapper resource="com/oskm/home/Member.xml"/>
+        <mapper resource="com/oskm/spring/mvc/home/Member.xml"/>
     </mappers>
 </configuration>
