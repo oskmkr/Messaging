@@ -19,9 +19,9 @@ import java.util.Map;
  */
 public interface HttpClientTemplate<T> {
 
-    public T execute(Map<String, String> parameters) throws HttpClientException;
+    public T execute(Map<String, String> parameters) throws HttpClientException, IOException;
 
-    public T execute() throws HttpClientException;
+    public T execute() throws HttpClientException, IOException;
 
     public T executeQuietly(HttpClientParam parameters) throws IOException;
 

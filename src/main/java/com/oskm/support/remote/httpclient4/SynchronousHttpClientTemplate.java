@@ -16,16 +16,22 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +72,20 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     }
 
     @Override
-    public T execute(Map<String, String> parameters) throws HttpClientException {
-        return null;
+    public T execute(Map<String, String> parameters) throws HttpClientException, IOException {
+
+        HttpClientParam httpClientParam = new HttpClientParam();
+
+        parameters.forEach((key, value) -> {
+            httpClientParam.addRequestParameter(key, value);
+        });
+
+        return this.execute(httpClientParam);
     }
 
     @Override
-    public T execute() throws HttpClientException {
-        return null;
+    public T execute() throws HttpClientException, IOException {
+        return this.execute(new HttpClientParam());
     }
 
     @Override
@@ -95,45 +108,47 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     }
 
     protected CloseableHttpClient createHttpClient() {
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", new PlainConnectionSocketFactory())
+                .register("https", findSslConnectionSocketFactory())
+                .build();
 
-        // TODO : PoolingHttpClientConnectionManager
-        //HttpClientConnectionManager connManager = new BasicHttpClientConnectionManager();
+        PoolingHttpClientConnectionManager poolingConnManager = new PoolingHttpClientConnectionManager(registry);
 
-        //CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(proxyManager.findRoutePlanner())/*.setConnectionManager(connManager)*/.build();
+        poolingConnManager.setMaxTotal(200);
+        poolingConnManager.setDefaultMaxPerRoute(20);
 
-
-        HttpClientBuilder httpClientBuilder = HttpClients.custom().setSSLSocketFactory(findSslConnectionSocketFactory());
+        HttpClientBuilder httpClientBuilder = HttpClients.custom().setConnectionManager(poolingConnManager);
 
         if (null != proxyManager) {
             httpClientBuilder.setRoutePlanner(proxyManager.findRoutePlanner());
         }
 
 
-
         httpClientBuilder.setRetryHandler(new HttpRequestRetryHandler() {
             @Override
             public boolean retryRequest(IOException e, int executionCount, HttpContext httpContext) {
 
-                if(executionCount > tryCount) {
+                if (executionCount > tryCount) {
                     return false;
                 }
 
-                if(e instanceof InterruptedIOException) {
+                if (e instanceof InterruptedIOException) {
                     // Timeout
                     return false;
                 }
 
-                if(e instanceof UnknownHostException) {
+                if (e instanceof UnknownHostException) {
                     // Unknown Host
                     return false;
                 }
 
-                if(e instanceof ConnectTimeoutException) {
+                if (e instanceof ConnectTimeoutException) {
                     // Connection Refused
                     return false;
                 }
 
-                if(e instanceof SSLException) {
+                if (e instanceof SSLException) {
                     // SSL handshake exception
                     return false;
                 }
@@ -145,7 +160,7 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 
                 boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
 
-                if(idempotent) {
+                if (idempotent) {
 
                     // retry if the request is considered idempotent
                     return true;
@@ -155,7 +170,6 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
             }
         });
 
-        //httpClientBuilder.setConnectionManager()
 
         CloseableHttpClient httpClient = httpClientBuilder.build();
 
@@ -180,7 +194,6 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 
         HttpRequestBase httpMethod = null;
 
-
         if (HttpGet.METHOD_NAME.equalsIgnoreCase(methodType)) {
             httpMethod = new HttpGet(requestUrl);
         } else if (HttpPut.METHOD_NAME.equalsIgnoreCase(methodType)) {
@@ -193,8 +206,16 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
             httpMethod = new HttpTrace(requestUrl);
         } else { // post
             httpMethod = new HttpPost(requestUrl);
+
+            try {
+                ((HttpPost) httpMethod).setEntity(new UrlEncodedFormEntity(httpParameters.getRequestParameterList()));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            //((HttpPost)httpMethod).addHeader("Authorization");
         }
 
+        httpMethod.setHeaders(httpParameters.getHeaders());
         httpMethod.setConfig(RequestConfig.custom().setConnectTimeout(connectionTimeout).setSocketTimeout(readTimeout).build());
 
 		/*
@@ -212,7 +233,7 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     }
 
     /**
-     *@reference http://fahdshariff.blogspot.kr/2009/08/retrying-operations-in-java.html
+     * @reference http://fahdshariff.blogspot.kr/2009/08/retrying-operations-in-java.html
      * IOException - read timeout , connection timeout 에 대한 retry 가 부족하며, retry delay 역시 필요하다.
      * 이에 대한 개선이 필요함.
      */
@@ -308,7 +329,7 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
             e.printStackTrace();
         }
 
-        return new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+        return new SSLConnectionSocketFactory(sslContext);
     }
 
     protected T parseResponseBody(InputStream responseBody) {

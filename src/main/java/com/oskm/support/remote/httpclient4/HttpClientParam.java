@@ -10,6 +10,7 @@ package com.oskm.support.remote.httpclient4;
 
 import com.oskm.support.BaseObject;
 import com.oskm.support.remote.httpclient.HttpClientException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
@@ -24,11 +25,23 @@ public class HttpClientParam extends BaseObject {
     List<NameValuePair> requestParameters = new ArrayList<NameValuePair>();
     String requestEntityContent;
     List<Header> requestHeaders = new ArrayList<Header>();
-    Map<String, String> headerMap = new HashMap<String, String>();
+    //Map<String, String> headerMap = new HashMap<String, String>();
     Map<String, File> fileParameters = new HashMap<String, File>();
+
+    public void addHeader(Header header) {
+        this.requestHeaders.add(header);
+    }
+
+    public Header[] getHeaders() {
+        return requestHeaders.toArray(new Header[0]);
+    }
 
     public NameValuePair[] getRequestParameters() {
         return requestParameters.toArray(new NameValuePair[0]);
+    }
+
+    public List<NameValuePair> getRequestParameterList() {
+        return requestParameters;
     }
 
     /**
@@ -87,7 +100,7 @@ public class HttpClientParam extends BaseObject {
         fileParameters.put(name, value);
         return this;
     }
-
+/*
     public Set<String> getHeaderNames() {
         return headerMap.keySet();
     }
@@ -95,4 +108,5 @@ public class HttpClientParam extends BaseObject {
     public String getHeaderValue(String name) {
         return headerMap.get(name);
     }
+    */
 }

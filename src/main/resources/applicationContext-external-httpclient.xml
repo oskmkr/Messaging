@@ -31,6 +31,24 @@
         <property name="httpResponseParser" ref="toStringResponseParser"/>
     </bean>
 
+    <bean id="dropboxTokenHttpClientTemplate" class="com.oskm.support.remote.httpclient4.SynchronousHttpClientTemplate">
+        <constructor-arg index="0" value="https://api.dropbox.com/1/oauth2/token?grant_type={grant_type}"/>
+        <constructor-arg index="1" value="POST"/>
+        <property name="connectionTimeout" value="1000"/>
+        <property name="readTimeout" value="1000"/>
+        <property name="proxyManager" ref="noProxyManager"/>
+        <property name="httpResponseParser" ref="toJSONObjectResponseParser"/>
+    </bean>
+
+    <bean id="dropboxAccountInfoHttpClientTemplate" class="com.oskm.support.remote.httpclient4.SynchronousHttpClientTemplate">
+        <constructor-arg index="0" value="https://api.dropbox.com/1/account/info"/>
+        <constructor-arg index="1" value="GET"/>
+        <property name="connectionTimeout" value="1000"/>
+        <property name="readTimeout" value="2000"/>
+        <property name="proxyManager" ref="noProxyManager"/>
+        <property name="httpResponseParser" ref="toJSONObjectResponseParser"/>
+    </bean>
+
     <bean id="noProxyManager" class="com.oskm.support.remote.httpclient4.ProxyManager">
     </bean>
 

@@ -67,20 +67,8 @@ public class HomeController implements BeanFactoryAware, ApplicationContextAware
         HttpClientParam params = new HttpClientParam();
         params.addRequestParameter("delay", delay);
         String result = "";
-        try {
-            result = userService.findUser(params);
-        } catch(TimeoutException e) {
-            System.out.println("concurrent timeout eception");
-        } catch(HttpClientException he) {
-            System.out.println("read timeout");
 
-        } catch(SocketTimeoutException se) {
-            System.out.println("socket read timeout");
-        }catch(ExecutionException ee) {
-            System.out.println("execution exception" + ee.getMessage());
-        }catch(Exception e2) {
-            e2.printStackTrace();
-        }
+        result = userService.findUser(params);
 
 
         return result;

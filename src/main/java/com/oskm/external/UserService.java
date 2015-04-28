@@ -21,6 +21,7 @@ public class UserService implements InitializingBean {
 
     public String findUser(HttpClientParam params) throws Exception {
 
+        /*
         String result = httpExecutor.submit(new Callable<String>() {
 
             @Override
@@ -31,7 +32,8 @@ public class UserService implements InitializingBean {
 
 
         return result;
-        //return client.execute(params);
+        */
+        return client.execute(params);
     }
 
     @Override
