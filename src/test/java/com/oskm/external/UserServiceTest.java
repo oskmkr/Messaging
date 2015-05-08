@@ -1,6 +1,6 @@
 package com.oskm.external;
 
-import com.oskm.support.remote.httpclient4.HttpClientParam;
+import com.oskm.support.remote.httpclient4.HttpClientParams;
 import com.oskm.support.remote.httpclient4.SynchronousHttpClientTemplate;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.io.IOException;
 
 /**
  * Created by sungkyu.eo on 2015-04-16.
@@ -33,7 +31,7 @@ public class UserServiceTest {
 
     @Test
     public void findUser() {
-        HttpClientParam params = new HttpClientParam();
+        HttpClientParams params = new HttpClientParams();
         params.addRequestParameter("delay", "true");
 
         for(int i =0; i < 200; i++) {
@@ -47,7 +45,7 @@ public class UserServiceTest {
 
         }
 
-        HttpClientParam params2 = new HttpClientParam();
+        HttpClientParams params2 = new HttpClientParams();
         params.addRequestParameter("delay", "false");
 
         try {

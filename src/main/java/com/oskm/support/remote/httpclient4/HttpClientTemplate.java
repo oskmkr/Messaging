@@ -23,7 +23,7 @@ public interface HttpClientTemplate<T> {
 
     public T execute() throws HttpClientException, IOException;
 
-    public T executeQuietly(HttpClientParam parameters) throws IOException;
+    public T executeQuietly(HttpClientParams parameters) throws IOException;
 
     public void setHttpResponseParser(HttpResponseParser<T> httpResponseParser);
 

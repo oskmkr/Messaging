@@ -1,13 +1,12 @@
 package com.oskm.external;
 
-import com.oskm.support.remote.httpclient4.HttpClientParam;
+import com.oskm.support.remote.httpclient4.HttpClientParams;
 import com.oskm.support.remote.httpclient4.SynchronousHttpClientTemplate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.concurrent.*;
 
 /**
@@ -19,7 +18,7 @@ public class UserService implements InitializingBean {
     private long httpThreadTimeout = 40000L;
     private int poolMaxCount = 200;
 
-    public String findUser(HttpClientParam params) throws Exception {
+    public String findUser(HttpClientParams params) throws Exception {
 
         /*
         String result = httpExecutor.submit(new Callable<String>() {

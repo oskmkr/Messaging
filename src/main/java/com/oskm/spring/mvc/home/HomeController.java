@@ -1,9 +1,7 @@
 package com.oskm.spring.mvc.home;
 
 import com.oskm.external.UserService;
-import com.oskm.support.remote.httpclient.HttpClientException;
-import com.oskm.support.remote.httpclient.parser.ToStringResponseParser;
-import com.oskm.support.remote.httpclient4.HttpClientParam;
+import com.oskm.support.remote.httpclient4.HttpClientParams;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -18,12 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 @RequestMapping(value = "/")
 @Controller
@@ -64,7 +58,7 @@ public class HomeController implements BeanFactoryAware, ApplicationContextAware
     @RequestMapping("/users")
     @ResponseBody
     public String findUser(@RequestParam(required = false) String delay) throws Exception {
-        HttpClientParam params = new HttpClientParam();
+        HttpClientParams params = new HttpClientParams();
         params.addRequestParameter("delay", delay);
         String result = "";
 

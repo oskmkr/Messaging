@@ -26,7 +26,6 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -74,22 +73,22 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     @Override
     public T execute(Map<String, String> parameters) throws HttpClientException, IOException {
 
-        HttpClientParam httpClientParam = new HttpClientParam();
+        HttpClientParams httpClientParams = new HttpClientParams();
 
         parameters.forEach((key, value) -> {
-            httpClientParam.addRequestParameter(key, value);
+            httpClientParams.addRequestParameter(key, value);
         });
 
-        return this.execute(httpClientParam);
+        return this.execute(httpClientParams);
     }
 
     @Override
     public T execute() throws HttpClientException, IOException {
-        return this.execute(new HttpClientParam());
+        return this.execute(new HttpClientParams());
     }
 
     @Override
-    public T executeQuietly(HttpClientParam parameters) throws IOException {
+    public T executeQuietly(HttpClientParams parameters) throws IOException {
 
         try {
             return execute(parameters);
@@ -100,7 +99,7 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 
     }
 
-    public T execute(HttpClientParam parameters) throws HttpClientException, IOException {
+    public T execute(HttpClientParams parameters) throws HttpClientException, IOException {
         CloseableHttpClient httpClient = createHttpClient();
         HttpUriRequest httpUriRequest = createHttpMethod(methodType, parameters);
 
@@ -182,12 +181,12 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         return httpClient;
     }
 
-    private HttpUriRequest createHttpMethod(String methodType, HttpClientParam parameters) throws HttpClientException {
+    private HttpUriRequest createHttpMethod(String methodType, HttpClientParams parameters) throws HttpClientException {
 
-        HttpClientParam httpParameters = parameters;
+        HttpClientParams httpParameters = parameters;
 
         if (httpParameters == null) {
-            httpParameters = new HttpClientParam();
+            httpParameters = new HttpClientParams();
         }
 
         String requestUrl = getRequestUrl(httpParameters.getRequestParameters());

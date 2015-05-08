@@ -1,6 +1,6 @@
 package com.oskm.external;
 
-import com.oskm.support.remote.httpclient4.HttpClientParam;
+import com.oskm.support.remote.httpclient4.HttpClientParams;
 import com.oskm.support.remote.httpclient4.SynchronousHttpClientTemplate;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
@@ -32,13 +32,12 @@ public class DropboxService {
      * @throws IOException
      */
     public JSONObject token() throws IOException {
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
-        param.addHeader(new BasicHeader("Authorization", "Basic " + "ejhpamY3cnRidDBqcWVjOjFzbDJqYnVjeWt5andxcA=="));
-
-        param.addRequestParameter("grant_type", "authorization_code");
-        param.addRequestParameter("code", "-CX9TLVwkMsAAAAAAAARU9IPwm9PzJsNCgLw1zb5KmQ");
-        param.addRequestParameter("redirect_uri", "http://localhost:8080/");
+        param.addHeader(new BasicHeader("Authorization", "Basic " + "ejhpamY3cnRidDBqcWVjOjFzbDJqYnVjeWt5andxcA=="))
+                .addRequestParameter("grant_type", "authorization_code")
+                .addRequestParameter("code", "-CX9TLVwkMsAAAAAAAARU9IPwm9PzJsNCgLw1zb5KmQ")
+                .addRequestParameter("redirect_uri", "http://localhost:8080/");
 
         String authString = appKey + appSecret;
 
@@ -50,7 +49,7 @@ public class DropboxService {
     }
 
     public JSONObject accountInfo() throws IOException {
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
         param.addHeader(new BasicHeader("Authorization", "Bearer " + "-CX9TLVwkMsAAAAAAAARVKXbxqYFdygxmJZAIM5TO1QxAIX35dek-SswwKVPKiDd"));
 

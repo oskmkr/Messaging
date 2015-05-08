@@ -10,7 +10,6 @@ package com.oskm.support.remote.httpclient4;
 
 import com.oskm.support.BaseObject;
 import com.oskm.support.remote.httpclient.HttpClientException;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
@@ -20,16 +19,24 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+/**
+ *
+ */
 @SuppressWarnings("serial")
-public class HttpClientParam extends BaseObject {
-    List<NameValuePair> requestParameters = new ArrayList<NameValuePair>();
-    String requestEntityContent;
-    List<Header> requestHeaders = new ArrayList<Header>();
-    //Map<String, String> headerMap = new HashMap<String, String>();
-    Map<String, File> fileParameters = new HashMap<String, File>();
+public class HttpClientParams extends BaseObject {
+    private List<NameValuePair> requestParameters = new ArrayList<NameValuePair>();
+    private String requestEntityContent;
+    private List<Header> requestHeaders = new ArrayList<Header>();
+    private Map<String, File> fileParameters = new HashMap<String, File>();
 
-    public void addHeader(Header header) {
+    /**
+     * add http header values
+     *
+     * @param header
+     */
+    public HttpClientParams addHeader(Header header) {
         this.requestHeaders.add(header);
+        return this;
     }
 
     public Header[] getHeaders() {
@@ -48,7 +55,7 @@ public class HttpClientParam extends BaseObject {
      * request parameter 추가
      * (POST, PUT 방식에서 사용)
      */
-    public HttpClientParam addRequestParameter(String name, String value) {
+    public HttpClientParams addRequestParameter(String name, String value) {
         requestParameters.add(new BasicNameValuePair(name, value));
         return this;
     }
@@ -57,7 +64,7 @@ public class HttpClientParam extends BaseObject {
      * string request entity 추가
      * (POST, PUT 방식에서 사용)
      */
-    public HttpClientParam addStringRequestEntity(String requestEntityContent) {
+    public HttpClientParams addStringRequestEntity(String requestEntityContent) {
         this.requestEntityContent = requestEntityContent;
         return this;
     }
@@ -96,17 +103,24 @@ public class HttpClientParam extends BaseObject {
         return fileParts;
     }
 
-    public HttpClientParam addFile(String name, File value) {
+    public HttpClientParams addFile(String name, File value) {
         fileParameters.put(name, value);
         return this;
     }
-/*
-    public Set<String> getHeaderNames() {
-        return headerMap.keySet();
+
+    /**
+     * create using builder patterns
+     */
+    public static class Builder {
+        // Required parameters
+
+        // Optional Parameters - initialized to default values
+        private List<NameValuePair> requestParameters = new ArrayList<NameValuePair>();
+        private String requestEntityContent;
+        private List<Header> requestHeaders = new ArrayList<Header>();
+        private Map<String, File> fileParameters = new HashMap<String, File>();
+
     }
 
-    public String getHeaderValue(String name) {
-        return headerMap.get(name);
-    }
-    */
 }
+

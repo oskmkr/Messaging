@@ -35,7 +35,7 @@ public class SynchronousHttpClientTemplateTest {
     @Test
     public void execute_GET() throws IOException {
 
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
         httpClient.setUrl("https://www.google.com");
         httpClient.setMethodType("GET");
@@ -54,7 +54,7 @@ public class SynchronousHttpClientTemplateTest {
     @Test
     public void executeRequestParameter_GET() throws IOException {
 
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
         httpClient.setUrl("http://www.naver.com");
         httpClient.setConnectionTimeout(1000);
@@ -74,7 +74,7 @@ public class SynchronousHttpClientTemplateTest {
     @Test
     public void GET_users() throws IOException {
 
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
         httpClient.setUrl("http://localhost:3000/users?delay={delay}");
         httpClient.setMethodType("GET");
@@ -95,7 +95,7 @@ public class SynchronousHttpClientTemplateTest {
     @Test
     public void POST_users() throws IOException {
 
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
         httpClient.setUrl("http://localhost:3000/users");
         httpClient.setMethodType("POST");
@@ -113,7 +113,7 @@ public class SynchronousHttpClientTemplateTest {
     @Test
     public void PUT_users() throws IOException {
 
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
         httpClient.setUrl("http://localhost:3000/users/updateduser");
         httpClient.setMethodType("PUT");
@@ -131,7 +131,7 @@ public class SynchronousHttpClientTemplateTest {
     @Test
     public void DELETE_users() throws IOException {
 
-        HttpClientParam param = new HttpClientParam();
+        HttpClientParams param = new HttpClientParams();
 
         httpClient.setUrl("http://localhost:3000/users/deleteid");
         httpClient.setMethodType("DELETE");
