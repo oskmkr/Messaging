@@ -29,6 +29,13 @@ public class HttpClientParams extends BaseObject {
     private List<Header> requestHeaders = new ArrayList<Header>();
     private Map<String, File> fileParameters = new HashMap<String, File>();
 
+    private HttpClientParams(Builder builder) {
+        this.requestParameters = builder.requestParameters;
+        this.requestEntityContent = builder.requestEntityContent;
+        this.requestHeaders = builder.requestHeaders;
+        this.fileParameters = builder.fileParameters;
+    }
+
     /**
      * add http header values
      *
@@ -120,6 +127,14 @@ public class HttpClientParams extends BaseObject {
         private List<Header> requestHeaders = new ArrayList<Header>();
         private Map<String, File> fileParameters = new HashMap<String, File>();
 
+
+        public Builder() {
+
+        }
+
+        public HttpClientParams build() {
+            return new HttpClientParams(this);
+        }
     }
 
 }
