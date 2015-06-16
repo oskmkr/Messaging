@@ -12,8 +12,15 @@ import com.oskm.support.remote.httpclient.HttpClientException;
 import com.oskm.support.remote.httpclient.HttpClientExecutionFailException;
 import com.oskm.support.remote.httpclient.parser.HttpResponseParseException;
 import com.oskm.support.remote.httpclient.parser.HttpResponseParser;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -27,6 +34,9 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -55,7 +65,7 @@ import java.util.Map;
 
 /**
  * classic synchronous I/O
- * <p/>
+ * <p>
  * Created by sungkyu.eo on 2015-04-02.
  */
 public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
@@ -124,6 +134,12 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
         }
 
 
+        // support Http Basic Authentication
+        if (null != basicAuthManager) {
+            httpClientBuilder.setDefaultCredentialsProvider(basicAuthManager.findCredentialsProvider());
+        }
+
+
         httpClientBuilder.setRetryHandler(new HttpRequestRetryHandler() {
             @Override
             public boolean retryRequest(IOException e, int executionCount, HttpContext httpContext) {
@@ -172,6 +188,8 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 
         CloseableHttpClient httpClient = httpClientBuilder.build();
 
+
+
 		/*
          * httpClient.getHttpConnectionManager().getParams().setConnectionTimeout
 		 * (connectionTimeout);
@@ -205,17 +223,28 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
             httpMethod = new HttpTrace(requestUrl);
         } else { // post
             httpMethod = new HttpPost(requestUrl);
-
-            try {
-                ((HttpPost) httpMethod).setEntity(new UrlEncodedFormEntity(httpParameters.getRequestParameterList()));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            //((HttpPost)httpMethod).addHeader("Authorization");
         }
 
         httpMethod.setHeaders(httpParameters.getHeaders());
+        if (ArrayUtils.isEmpty(httpMethod.getHeaders("Content-Type"))) {
+            httpMethod.setHeader("Content-Type", this.contentType);
+        }
+
+
         httpMethod.setConfig(RequestConfig.custom().setConnectTimeout(connectionTimeout).setSocketTimeout(readTimeout).build());
+
+        if (HttpPost.METHOD_NAME.equalsIgnoreCase(methodType)) {
+            try {
+                ((HttpPost) httpMethod).setEntity(new UrlEncodedFormEntity(httpParameters.getRequestParameterList()));
+                // content-type 이 application/json 인 경우 payload 로 json data 를 사용한다.
+
+                if (httpMethod.getHeaders("Content-Type")[0].getValue() == "application/json") {
+                    ((HttpPost) httpMethod).setEntity(new StringEntity(httpParameters.getStringRequestEntityContent()));
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
 
 		/*
          * // set request headers for (Header header :
@@ -245,18 +274,18 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 
                 response = httpClient.execute(httpUriRequest);
 
-                if (isSuccessfulStatus(response)) {
 
-                    HttpEntity httpEntity = response.getEntity();
+                //if (isSuccessfulStatus(response)) {
 
-                    //LOG.debug("IO", IOUtils.toString(httpEntity.getContent()));
-                    resultObject = parseResponseBody(httpEntity.getContent());
-                    break;
-                }
+                HttpEntity httpEntity = response.getEntity();
 
+                //LOG.debug("IO", IOUtils.toString(httpEntity.getContent()));
+                resultObject = parseResponseBody(httpEntity.getContent());
+                break;
+                //}
             }
 
-            validateResponse(response);
+            // validateResponse(response);
         } catch (HttpResponseParseException e) {
             LOG.error("URL[" + httpUriRequest.getURI().getRawPath() + "]", e);
             throw new HttpClientException(e.getMessage(), e);
@@ -340,7 +369,7 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
 
     private String url; // with template
     private String methodType; // get or post
-    private String contentType = "text/html"; // contentType
+    private String contentType = "*/*"; // contentType
     private String contentCharset = "utf-8"; // for post method
     private String urlEncoding; // for get method only
 
@@ -350,6 +379,12 @@ public class SynchronousHttpClientTemplate<T> implements HttpClientTemplate<T> {
     @Autowired
     @Qualifier("proxyManager")
     private ProxyManager proxyManager;
+
+    private BasicAuthManager basicAuthManager;
+
+    public void setBasicAuthManager(BasicAuthManager basicAuthManager) {
+        this.basicAuthManager = basicAuthManager;
+    }
 
     private HttpResponseParser httpResponseParser;
 

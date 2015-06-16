@@ -102,7 +102,6 @@ public class Java7NewFeatures {
 	}
 
 	
-	//병렬 코어 사용
 	public void forkJoin() {
 		int numberOfProcessors = Runtime.getRuntime().availableProcessors();
 

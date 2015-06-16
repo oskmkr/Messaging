@@ -29,6 +29,14 @@ public class HttpClientParams extends BaseObject {
     private List<Header> requestHeaders = new ArrayList<Header>();
     private Map<String, File> fileParameters = new HashMap<String, File>();
 
+    public void setRequestEntityContent(String requestEntityContent) {
+        this.requestEntityContent = requestEntityContent;
+    }
+
+    public HttpClientParams() {
+    	
+    }
+    
     private HttpClientParams(Builder builder) {
         this.requestParameters = builder.requestParameters;
         this.requestEntityContent = builder.requestEntityContent;
