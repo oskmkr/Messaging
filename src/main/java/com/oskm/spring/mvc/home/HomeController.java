@@ -27,8 +27,7 @@ public class HomeController implements BeanFactoryAware, ApplicationContextAware
 
     // @Secured("ROLE_ADMIN")
     @RequestMapping(value = "Home", method = {RequestMethod.GET})
-    @ResponseBody
-    public String viewHome(@RequestParam Integer age) {
+    public String viewHome(/*@RequestParam Integer age*/) {
         LOG.debug("home..");
         /*
          * Integer i = age / 0;
@@ -36,7 +35,7 @@ public class HomeController implements BeanFactoryAware, ApplicationContextAware
 		 * LOG.debug(">>>" + i);
 		 */
 
-        System.out.println("end..." + domain);
+        LOG.debug("end..." + domain);
 
         return "Home";
     }

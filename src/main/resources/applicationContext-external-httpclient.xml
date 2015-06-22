@@ -80,6 +80,24 @@
         <property name="httpResponseParser" ref="toJsonNodeResponseParser"/>
     </bean>
 
+    <bean id="naverTokenHttpClientTemplate" class="com.oskm.support.remote.httpclient4.SynchronousHttpClientTemplate">
+        <constructor-arg index="0" value="https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&amp;client_id={client_id}&amp;client_secret={client_secret}&amp;code={code}&amp;state="/>
+        <constructor-arg index="1" value="GET"/>
+        <property name="connectionTimeout" value="1000"/>
+        <property name="readTimeout" value="2000"/>
+        <property name="proxyManager" ref="noProxyManager"/>
+        <property name="httpResponseParser" ref="toJsonNodeResponseParser"/>
+    </bean>
+
+    <bean id="naverBlogCategoryHttpClientTemplate" class="com.oskm.support.remote.httpclient4.SynchronousHttpClientTemplate">
+        <constructor-arg index="0" value="https://openapi.naver.com/blog/listCategory.json?blogId={blogId}"/>
+        <constructor-arg index="1" value="GET"/>
+        <property name="contentType" value="application/json"/>
+        <property name="connectionTimeout" value="1000"/>
+        <property name="readTimeout" value="2000"/>
+        <property name="proxyManager" ref="noProxyManager"/>
+        <property name="httpResponseParser" ref="toJsonNodeResponseParser"/>
+    </bean>
 
     <bean id="noProxyManager" class="com.oskm.support.remote.httpclient4.ProxyManager">
     </bean>

@@ -220,6 +220,11 @@
             <artifactId>resteasy-jaxrs</artifactId>
             <version>3.0.5.Final</version>
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.1.2</version>
+        </dependency>
 
         <!-- database -->
         <dependency>
@@ -283,6 +288,7 @@
             <artifactId>tomcat-embed-jasper</artifactId>
             <version>${tomcat.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jasper</artifactId>
@@ -298,6 +304,7 @@
             <artifactId>tomcat-jsp-api</artifactId>
             <version>${tomcat.version}</version>
         </dependency>
+        -->
         <!-- embed tomcat end -->
         <!-- rabbit mq start -->
         <!--
@@ -362,6 +369,26 @@
             <artifactId>curator-framework</artifactId>
             <version>2.7.0</version>
         </dependency>
+        <!-- google html compressor -->
+        <dependency>
+            <groupId>com.googlecode.htmlcompressor</groupId>
+            <artifactId>htmlcompressor</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <!--아래 2 라이브러리는 html compressor 에서 optional true 로 설정되어 있다 -->
+        <dependency>
+            <groupId>com.google.javascript</groupId>
+            <artifactId>closure-compiler</artifactId>
+            <version>r1043</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.6</version>
+            <optional>true</optional>
+        </dependency>
+        <!--위 2 라이브러리는 html compressor 에서 optional true 로 설정되어 있다 -->
     </dependencies>
     <repositories>
         <repository>
