@@ -8,6 +8,6 @@ import org.springframework.stereotype.Service;
  * Created by oskmkr on 2015-06-18.
  */
 public interface RemoteService {
-    public void doSomething();
+    public String echo(String word);
 
 }

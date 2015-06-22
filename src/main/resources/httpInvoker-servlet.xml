@@ -19,7 +19,7 @@ http://www.springframework.org/schema/mvc http://www.springframework.org/schema/
 
     <bean id="remoteService" class="com.oskm.spring.httpinvoker.RemoteServiceImpl"/>
 
-    <bean id="/remote/RemoteService.http" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+    <bean name="/RemoteService.http" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
         <property name="service" ref="remoteService"/>
         <property name="serviceInterface" value="com.oskm.spring.httpinvoker.RemoteService"/>
     </bean>

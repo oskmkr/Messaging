@@ -17,7 +17,9 @@ public class Client {
 
         RemoteService remoteService = (RemoteService) ctx.getBean("remoteService");
 
-        remoteService.doSomething();
+        String result = remoteService.echo("ball");
+
+        LOG.debug(result);
 
     }
 

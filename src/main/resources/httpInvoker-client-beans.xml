@@ -11,4 +11,5 @@ http://www.springframework.org/schema/mvc http://www.springframework.org/schema/
         <property name="serviceUrl" value="http://localhost:8080/remote/RemoteService.http"></property>
         <property name="serviceInterface" value="com.oskm.spring.httpinvoker.RemoteService"></property>
     </bean>
+
 </beans>

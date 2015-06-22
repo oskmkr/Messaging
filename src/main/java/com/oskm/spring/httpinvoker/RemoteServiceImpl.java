@@ -12,9 +12,8 @@ public class RemoteServiceImpl implements RemoteService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoteServiceImpl.class);
 
-    public void doSomething() {
-
-        LOG.debug("done something in RemoteService Object");
+    @Override
+    public String echo(String word) {
+        return word.toUpperCase();
     }
-
 }
