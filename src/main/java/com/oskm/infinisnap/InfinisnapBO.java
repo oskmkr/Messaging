@@ -9,38 +9,39 @@ import org.infinispan.manager.EmbeddedCacheManager;
 
 public class InfinisnapBO {
 
-	private static Logger LOG = Logger.getLogger(InfinisnapBO.class); 
-	public void connect() {
+    private static Logger LOG = Logger.getLogger(InfinisnapBO.class);
 
-		EmbeddedCacheManager cacheManager = new DefaultCacheManager();
-		
-		Cache<Object, Object> cache = cacheManager.getCache();
-		
-		cache.put("key", "value");
-		cache.put("key1", "value");
-		cache.put("key2", "value");
-		
-		System.out.println(cache.size());
-		
-		LOG.debug(cache);
-		
-	}
-	
-	public void connectRemote() {
+    public void connect() {
 
-		RemoteCacheManager cacheManager = new RemoteCacheManager("localhost");
-		
-		RemoteCache cache = cacheManager.getCache();
-		
-		LOG.debug("key value" + cache.get("key"));
-		
-		cache.put("key", "¾î¼º±Ô");
-		cache.put("key1", "value");
-		cache.put("key2", "value");
-		
-		System.out.println(cache.size());
-		
-		LOG.debug(cache);
-		
-	}
+        EmbeddedCacheManager cacheManager = new DefaultCacheManager();
+
+        Cache<Object, Object> cache = cacheManager.getCache();
+
+        cache.put("key", "value");
+        cache.put("key1", "value");
+        cache.put("key2", "value");
+
+        System.out.println(cache.size());
+
+        LOG.debug(cache);
+
+    }
+
+    public void connectRemote() {
+
+        RemoteCacheManager cacheManager = new RemoteCacheManager("localhost");
+
+        RemoteCache cache = cacheManager.getCache();
+
+        LOG.debug("key value" + cache.get("key"));
+
+        cache.put("key", "ï¿½î¼ºï¿½ï¿½");
+        cache.put("key1", "value");
+        cache.put("key2", "value");
+
+        System.out.println(cache.size());
+
+        LOG.debug(cache);
+
+    }
 }

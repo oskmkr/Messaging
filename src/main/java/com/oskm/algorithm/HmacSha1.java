@@ -12,6 +12,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -27,7 +28,7 @@ public class HmacSha1 {
 
         byte[] rawHmac = null;
 
-        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA_1);
+        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(Charset.forName("UTF-8")), HMAC_SHA_1);
 
         Mac mac = null;
         try {
@@ -49,11 +50,11 @@ public class HmacSha1 {
             Class Base64 = Class.forName("org.apache.commons.codec.binary.Base64");
             Class[] parameterTypes = new Class[]{byte[].class};
             Method encodeBase64 = Base64.getMethod("encodeBase64", parameterTypes);
-            buf = (byte[])encodeBase64.invoke(Base64, rawHmac);
-        } catch(Exception e) {
+            buf = (byte[]) encodeBase64.invoke(Base64, rawHmac);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new String ( buf );
+        return new String(buf);
 
     }
 }

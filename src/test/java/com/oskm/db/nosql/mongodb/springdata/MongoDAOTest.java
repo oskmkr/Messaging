@@ -50,7 +50,7 @@ public class MongoDAOTest {
     public void selectByUserName() {
         List<User> userList = dao.selectByUserName("sungkyu");
 
-        for(User user : userList) {
+        for (User user : userList) {
             LOG.debug("[userName]" + user.getUserName());
         }
     }
@@ -59,7 +59,7 @@ public class MongoDAOTest {
     public void selectAll() {
         List<User> userList = dao.selectAll();
 
-        for(User user : userList) {
+        for (User user : userList) {
             LOG.debug("[userName]" + user.getUserName());
         }
     }
@@ -68,7 +68,7 @@ public class MongoDAOTest {
     public void selectUser() {
         List<User> userList = dao.selectUser("oskm", "sungkyu");
 
-        for(User user : userList) {
+        for (User user : userList) {
             LOG.debug("[userName]" + user.getUserName());
         }
     }

@@ -1,54 +1,57 @@
 package com.oskm.support.remote.httpclient;
 
+import com.oskm.support.remote.httpclient.parser.HttpResponseParser;
+
 import java.io.IOException;
 import java.util.Map;
 
-import com.oskm.support.remote.httpclient.parser.HttpResponseParser;
-
 public interface HttpClientTemplate<T> {
 
-	/**
-	 * @param requestParameters
-	 * @return
-	 * @throws IOException 
-	 * @throws ClientProtocolException 
-	 * @throws HttpClientException
-	 * @deprecated ÀÌ ¸Þ¼­µå´Â CommonsHttpClientTemplate¿¡¼­ »ç¿ëµÇ´ø ÀÎÅÍÆäÀÌ½º·Î<br>
-	 * {@link GetHttpClientTemplate}°ú {@link PostHttpClientTemplate}¸¦ »ç¿ëÇÏ·Á¸é<br> »õ·Ó°Ô Ãß°¡µÈ {@link HttpClientTemplate#execute(Map)}
-	 * À» »ç¿ëÇÑ´Ù
-	 */
-	@Deprecated
-	public T execute(HttpClientParameters parameters) throws HttpClientException, IOException;
-	
-	/**
-	 * Parameter ¸¦ Àü´ÞÇÏ¿© API Åë½ÅÇÏ´Â method
-	 * 
-	 * @param parameters
-	 * @return
-	 * @throws HttpClientException
-	 */
-	public T execute(Map<String, String> parameters) throws HttpClientException; 
-	
-	/**
-	 * º°µµ Àü´ÞÇÒ Parameter°¡ ¾ø´Â °æ¿ì »ç¿ëÇÏ´Â method
-	 * @return
-	 * @throws HttpClientException
-	 */
-	public T execute() throws HttpClientException;
+    /**
+     * @param requestParameters
+     * @return
+     * @throws IOException
+     * @throws ClientProtocolException
+     * @throws HttpClientException
+     * @deprecated ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ï¿½ CommonsHttpClientTemplateï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½<br>
+     * {@link GetHttpClientTemplate}ï¿½ï¿½ {@link PostHttpClientTemplate}ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½<br> ï¿½ï¿½ï¿½Ó°ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ {@link HttpClientTemplate#execute(Map)}
+     * ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
+     */
+    @Deprecated
+    public T execute(HttpClientParameters parameters) throws HttpClientException, IOException;
 
-	/**
-	 * HttpClientException ¹ß»ý ½Ã throwÇÏÁö ¾Ê°í µðÆúÆ®°ª(¸®ÅÏÅ¸ÀÔÀÌ StringÀÎ °æ¿ì´Â °ø¹é, ´Ù¸¥ Å¸ÀÔÀÇ °æ¿ì´Â null)À¸·Î ¸®ÅÏÇÏ´Â ¸Þ¼Òµå 
-	 * (client ÄÚµå¿¡¼­ Æ¯º°È÷ Ã³¸®ÇØÁÙ °ÍÀÌ ¾øÀ» ¶§ »ç¿ëÇÑ´Ù)
-	 * @param requestParameters
-	 * @return
-	 * @throws IOException 
-	 */
-	public T executeQuietly(HttpClientParameters parameters) throws IOException;
+    /**
+     * Parameter ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ API ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ method
+     *
+     * @param parameters
+     * @return
+     * @throws HttpClientException
+     */
+    public T execute(Map<String, String> parameters) throws HttpClientException;
 
-	/**
-	 * execute ¸Þ¼Òµå ³»ºÎ¿¡¼­ response InputStreamÀ» Æ¯Á¤ class·Î parsingÇÏ´Âµ¥, parsing½Ã »ç¿ëÇÒ parser¸¦ injectÇØÁÖ´Â ¸Þ¼Òµå
-	 * (injectÇØÁÖÁö ¾ÊÀ» °æ¿ì execute¸Þ¼Òµå°¡ nullÀ» ¸®ÅÏÇÑ´Ù.)
-	 * @param httpResponseParser
-	 */
-	public void setHttpResponseParser(HttpResponseParser<T> httpResponseParser);
+    /**
+     * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Parameterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ method
+     *
+     * @return
+     * @throws HttpClientException
+     */
+    public T execute() throws HttpClientException;
+
+    /**
+     * HttpClientException ï¿½ß»ï¿½ ï¿½ï¿½ throwï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ Stringï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½Ù¸ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ null)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½
+     * (client ï¿½Úµå¿¡ï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½)
+     *
+     * @param requestParameters
+     * @return
+     * @throws IOException
+     */
+    public T executeQuietly(HttpClientParameters parameters) throws IOException;
+
+    /**
+     * execute ï¿½Þ¼Òµï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ response InputStreamï¿½ï¿½ Æ¯ï¿½ï¿½ classï¿½ï¿½ parsingï¿½Ï´Âµï¿½, parsingï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ parserï¿½ï¿½ injectï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Þ¼Òµï¿½
+     * (injectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ executeï¿½Þ¼Òµå°¡ nullï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.)
+     *
+     * @param httpResponseParser
+     */
+    public void setHttpResponseParser(HttpResponseParser<T> httpResponseParser);
 }

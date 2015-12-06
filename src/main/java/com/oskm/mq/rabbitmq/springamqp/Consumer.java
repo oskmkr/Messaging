@@ -1,7 +1,6 @@
 package com.oskm.mq.rabbitmq.springamqp;
 
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -11,7 +10,17 @@ public class Consumer {
     private static final Logger LOG = Logger.getLogger(Consumer.class);
 
     public static void main(String[] args) {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-amqp-consumer.xml");
+
+        run();
+    }
+
+    private static void run() {
+        ClassPathXmlApplicationContext ctx = null;
+        try {
+            ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-amqp-consumer.xml");
+        } catch (Exception e) {
+            LOG.error(e, e);
+        }
     }
 }
 

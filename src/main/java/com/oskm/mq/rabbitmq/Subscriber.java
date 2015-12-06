@@ -31,7 +31,7 @@ public class Subscriber {
 
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-            String message = new String(delivery.getBody());
+            String message = new String(delivery.getBody(), "UTF-8");
             LOG.debug(" [x] Received '" + message + "'");
         }
     }

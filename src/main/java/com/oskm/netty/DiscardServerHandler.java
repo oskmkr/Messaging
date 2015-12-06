@@ -22,30 +22,30 @@ import io.netty.util.ReferenceCountUtil;
  */
 public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
 
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		// TODO Auto-generated method stub
-		ByteBuf in = (ByteBuf) msg;
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // TODO Auto-generated method stub
+        ByteBuf in = (ByteBuf) msg;
 
-		try {
-			while (in.isReadable()) {
-				System.out.print((char) in.readByte());
-				System.out.flush();
-			}
+        try {
+            while (in.isReadable()) {
+                System.out.print((char) in.readByte());
+                System.out.flush();
+            }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			ReferenceCountUtil.release(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            ReferenceCountUtil.release(msg);
 
-		}
-	}
+        }
+    }
 
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		// TODO Auto-generated method stub
-		cause.printStackTrace();
-		ctx.close();
-	}
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        // TODO Auto-generated method stub
+        cause.printStackTrace();
+        ctx.close();
+    }
 
 }

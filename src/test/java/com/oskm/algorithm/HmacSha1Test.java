@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class HmacSha1Test {
 

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /**
  * Created by sungkyu.eo on 2014-08-01.
@@ -29,7 +30,7 @@ public class Publisher {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-            while(true ) {
+            while (true) {
                 String line = in.readLine();
                 if (line == null) {
                     break;
@@ -37,7 +38,7 @@ public class Publisher {
 
                 String message = "[Hello, rabbit MQ] " + line;
 
-                channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+                channel.basicPublish("", QUEUE_NAME, null, message.getBytes(Charset.forName("UTF-8")));
 
                 LOG.debug(" [x] Sent '" + message + "'");
 
